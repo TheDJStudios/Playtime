@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "playtime",
+  "version": "1.0",
+  "name": "Playtime",
+  "description": "Poppy playtime",
+  "authors": [
+    "TheDJStudios"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.generated.playtime.Playtime"
+    ],
+    "client": [
+      "com.generated.playtime.PlaytimeClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.22",
+    "fabric-api": "*",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}

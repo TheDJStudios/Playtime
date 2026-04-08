@@ -1,0 +1,16 @@
+{
+  "block.playtime.hand_scanner": "Hand Scanner",
+  "block.playtime.hand_scanner_red_right": "Hand Scanner (Red)",
+  "block.playtime.critter_plush_hoppy": "Critter plush (Hoppy)",
+  "item.playtime.grabpack_cannon": "Grabpack cannon",
+  "item.playtime.grabpack_left_blue": "Grabpack Left (Blue)",
+  "item.playtime.grabpack_right_red": "Grabpack right (red)",
+  "itemGroup.playtime.playtime_tab": "Playtime",
+  "itemGroup.playtime.playtime_plushies_tab": "Plushies",
+  "advancement.playtime.playtime.playtime.title": "Whats the time?",
+  "advancement.playtime.playtime.playtime.description": "Join a world with the playtime mod installed",
+  "advancement.playtime.playtime.grabpack.title": "Grabby",
+  "advancement.playtime.playtime.grabpack.description": "Obtain a Grabpack",
+  "advancement.playtime.playtime.hand_scanner.title": "Identification",
+  "advancement.playtime.playtime.hand_scanner.description": "Obtain or use a Hand Scanner"
+}

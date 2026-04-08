@@ -1,0 +1,10 @@
+{
+  "block.playtime.hand_scanner": "Hand Scanner",
+  "block.playtime.hand_scanner_red_right": "Hand Scanner (Red)",
+  "block.playtime.critter_plush_hoppy": "Critter plush (Hoppy)",
+  "item.playtime.grabpack_cannon": "Grabpack cannon",
+  "item.playtime.grabpack_left_blue": "Grabpack Left (Blue)",
+  "item.playtime.grabpack_right_red": "Grabpack right (red)",
+  "itemGroup.playtime.playtime_tab": "Playtime",
+  "itemGroup.playtime.playtime_plushies_tab": "Plushies"
+}

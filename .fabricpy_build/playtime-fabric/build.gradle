@@ -1,0 +1,50 @@
+plugins {
+    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'maven-publish'
+}
+
+version = "1.0"
+group = "com.generated.playtime"
+
+base {
+    archivesName = "playtime"
+}
+
+repositories {
+    maven { url = "https://maven.fabricmc.net/" }
+    
+
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:1.20.1"
+    mappings "net.fabricmc:yarn:1.20.1+build.10:v2"
+    modImplementation "net.fabricmc:fabric-loader:0.14.22"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.91.1+1.20.1"
+    
+
+}
+
+processResources {
+    inputs.property "version", version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 17
+}
+
+java {
+    withSourcesJar()
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${base.archivesName.get()}" }
+    }
+}
