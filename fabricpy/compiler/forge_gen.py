@@ -297,6 +297,15 @@ def _render_layer_value(value: str) -> str:
     return clean if clean in {"solid", "cutout", "cutout_mipped", "translucent"} else "solid"
 
 
+def _effective_block_render_layer(block) -> str:
+    explicit = _render_layer_value(getattr(block, "render_layer", ""))
+    if explicit != "solid":
+        return explicit
+    if (not block.opaque) or bool(getattr(block, "emissive_texture", "")):
+        return "cutout"
+    return "solid"
+
+
 def _forge_render_type_expr(value: str) -> str:
     layer = _render_layer_value(value)
     if layer == "translucent":
@@ -356,8 +365,17 @@ def _geo_entity_animation_parts(mod_id: str, entity) -> tuple[str, str]:
     return _resource_location_parts(mod_id, getattr(entity, "geo_animations", ""), "animations", entity.entity_id, ".animation.json")
 
 
-def _forge_api_map_for_project(pkg: str) -> dict[str, str]:
+def _forge_api_map_for_project(pkg: str, minecraft_version: str) -> dict[str, str]:
     api_map = dict(FORGE_API_MAP)
+    if minecraft_version == "1.21.1":
+        api_map = {
+            key: value.replace("new ResourceLocation(", "net.minecraft.resources.ResourceLocation.parse(")
+            for key, value in api_map.items()
+        }
+        api_map = {
+            key: value.replace(".getAdvancement(", ".get(")
+            for key, value in api_map.items()
+        }
     runtime = f"{pkg}.util.FabricPyRuntime"
     network = f"{pkg}.network.FabricPyNetwork"
     screens = f"{pkg}.client.ModScreens"
@@ -384,6 +402,12 @@ def _forge_api_map_for_project(pkg: str) -> dict[str, str]:
         "ctx.net.broadcast": f"{network}.broadcast(server, {{0}}, {{1}})",
     })
     return api_map
+
+
+def _forge_rl_expr(mod: "Mod", namespace_expr: str, path_expr: str) -> str:
+    if mod.minecraft_version == "1.21.1":
+        return f"net.minecraft.resources.ResourceLocation.fromNamespaceAndPath({namespace_expr}, {path_expr})"
+    return f"new net.minecraft.resources.ResourceLocation({namespace_expr}, {path_expr})"
 
 
 def _keybind_code_expr(keybind) -> str:
@@ -492,7 +516,7 @@ def generate_forge_project(mod: "Mod", project_dir: Path):
         pass
 
     transpiler = JavaTranspiler(
-        _forge_api_map_for_project(pkg),
+        _forge_api_map_for_project(pkg, mod.minecraft_version),
         interop_index_path=project_dir / ".fabricpy_meta" / "symbol_index.json",
     )
 
@@ -543,7 +567,7 @@ def _write_main_class(mod, java_root: Path, pkg: str):
         imports.append(f"import {pkg}.network.FabricPyNetwork;")
 
     client_setup_lines = [
-        *(f"            ItemBlockRenderTypes.setRenderLayer(ModBlocks.{block.block_id.upper()}.get(), {_forge_render_type_expr(getattr(block, 'render_layer', 'cutout' if (not block.opaque or getattr(block, 'emissive_texture', '')) else 'solid'))});" for block in cutout_blocks),
+        *(f"            ItemBlockRenderTypes.setRenderLayer(ModBlocks.{block.block_id.upper()}.get(), {_forge_render_type_expr(_effective_block_render_layer(block))});" for block in cutout_blocks),
         *(["            ModGeoRenderers.registerClient();"] if has_geo else []),
         *(["            // Keybinds register through ModKeybinds on the client bus."] if has_keybinds else []),
     ]
@@ -609,6 +633,12 @@ public class {class_name} {{
 def _write_runtime_helpers(mod, java_root: Path, pkg: str):
     util_dir = java_root / "util"
     util_dir.mkdir(exist_ok=True)
+    clip_entity_expr = "(net.minecraft.world.entity.Entity)null"
+    particle_id_expr = (
+        "net.minecraft.resources.ResourceLocation.parse(particleId)"
+        if mod.minecraft_version == "1.21.1"
+        else "new net.minecraft.resources.ResourceLocation(particleId)"
+    )
     src = f"""\
 package {pkg}.util;
 
@@ -652,7 +682,7 @@ public class FabricPyRuntime {{
     }}
 
     public static BlockHitResult raycastBlock(Level level, Vec3 start, Vec3 end) {{
-        return level.clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, null));
+        return level.clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, {clip_entity_expr}));
     }}
 
     public static String raycastBlockId(Level level, Vec3 start, Vec3 end) {{
@@ -680,7 +710,7 @@ public class FabricPyRuntime {{
     }}
 
     public static void spawnParticle(Level level, String particleId, double x, double y, double z, double dx, double dy, double dz, double speed, int count) {{
-        var particleType = ForgeRegistries.PARTICLE_TYPES.getValue(new net.minecraft.resources.ResourceLocation(particleId));
+        var particleType = ForgeRegistries.PARTICLE_TYPES.getValue({particle_id_expr});
         if (!(particleType instanceof SimpleParticleType simple)) {{
             return;
         }}
@@ -707,7 +737,7 @@ def _write_network(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
     client_cases = []
     for packet in mod._packets:
         if packet.server_source:
-            body = transpiler.transpile_method(packet.server_source)
+            body = transpiler.transpile_method(packet.server_source, py_func=packet.server_func)
             server_cases.append(f"""\
             case "{packet.packet_id}" -> {{
                 var player = context.getSender();
@@ -720,7 +750,7 @@ def _write_network(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
 {body}
             }}""")
         if packet.client_source:
-            body = transpiler.transpile_method(packet.client_source)
+            body = transpiler.transpile_method(packet.client_source, py_func=packet.client_func)
             client_cases.append(f"""\
             case "{packet.packet_id}" -> {{
                 var client = net.minecraft.client.Minecraft.getInstance();
@@ -749,7 +779,7 @@ import java.util.function.Supplier;
 public class FabricPyNetwork {{
     private static final String PROTOCOL = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-        new ResourceLocation("{mod.mod_id}", "fabricpy_network"),
+        {_forge_rl_expr(mod, f'"{mod.mod_id}"', '"fabricpy_network"')},
         () -> PROTOCOL,
         PROTOCOL::equals,
         PROTOCOL::equals
@@ -843,10 +873,10 @@ def _write_screens(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
     open_lines = []
     for screen in mod._screens:
         cn = f"{to_pascal(screen.screen_id.replace('/', '_'))}Screen"
-        open_body = transpiler.transpile_method(screen.open_source) if screen.open_source else "        // No on_open handler"
+        open_body = transpiler.transpile_method(screen.open_source, py_func=screen.open_func) if screen.open_source else "        // No on_open handler"
         button_lines = []
         for button in screen.buttons:
-            body = transpiler.transpile_method(button.source) if button.source else "            // No handler"
+            body = transpiler.transpile_method(button.source, py_func=button.func) if button.source else "            // No handler"
             button_lines.append(f"""\
         this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(net.minecraft.network.chat.Component.literal("{button.text}"), widget -> {{
             var client = this.minecraft;
@@ -1073,7 +1103,9 @@ def _item_lookup_expr(mod: "Mod", item_ref: str) -> str:
     for item in mod._items:
         if namespace == mod.mod_id and item.item_id == path:
             return f"ModItems.{item.item_id.upper()}.get()"
-    return f'ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("{namespace}", "{path}"))'
+    namespace_expr = f'"{namespace}"'
+    path_expr = f'"{path}"'
+    return f"ForgeRegistries.ITEMS.getValue({_forge_rl_expr(mod, namespace_expr, path_expr)})"
 
 
 def _write_mod_creative_tabs(mod, java_root: Path, pkg: str):
@@ -1137,7 +1169,7 @@ def _write_mod_keybinds(mod, java_root: Path, pkg: str, transpiler: JavaTranspil
             f'    public static final KeyMapping {const_name} = new KeyMapping("{title_key}", InputConstants.Type.KEYSYM, {_keybind_code_expr(bind)}, "{category_key}");'
         )
         if bind.source:
-            body = transpiler.transpile_method(bind.source)
+            body = transpiler.transpile_method(bind.source, py_func=bind.func)
             handlers.append(f"""\
         while ({const_name}.consumeClick()) {{
             if (client.player == null || client.level == null) {{
@@ -1221,13 +1253,13 @@ public class {model_cn} extends GeoModel<{cn}BlockEntity> {{
     private ResourceLocation parseRef(String raw, String fallbackNamespace, String fallbackPath) {{
         String value = raw == null ? "" : raw.trim();
         if (value.isEmpty()) {{
-            return new ResourceLocation(fallbackNamespace, fallbackPath);
+            return {_forge_rl_expr(mod, "fallbackNamespace", "fallbackPath")};
         }}
         int split = value.indexOf(':');
         if (split >= 0) {{
-            return new ResourceLocation(value.substring(0, split), value.substring(split + 1));
+            return {_forge_rl_expr(mod, "value.substring(0, split)", "value.substring(split + 1)")};
         }}
-        return new ResourceLocation("{mod.mod_id}", value);
+        return {_forge_rl_expr(mod, f'"{mod.mod_id}"', "value")};
     }}
 
     @Override
@@ -1242,7 +1274,7 @@ public class {model_cn} extends GeoModel<{cn}BlockEntity> {{
 
     @Override
     public ResourceLocation getAnimationResource({cn}BlockEntity animatable) {{
-        return new ResourceLocation("{anim_ns}", "{anim_path}");
+        return {_forge_rl_expr(mod, f'"{anim_ns}"', f'"{anim_path}"')};
     }}
 }}
 """
@@ -1269,7 +1301,7 @@ public class {renderer_cn} extends GeoBlockRenderer<{cn}BlockEntity> {{
 
     @Override
     public RenderType getRenderType({cn}BlockEntity animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {{
-        return {_forge_render_type_expr(getattr(block, "render_layer", "translucent" if not block.opaque else "solid"))};
+        return {_forge_render_type_expr(_effective_block_render_layer(block))};
     }}
 
     @Override
@@ -1309,13 +1341,13 @@ public class {model_cn} extends GeoModel<{cn}> {{
     private ResourceLocation parseRef(String raw, String fallbackNamespace, String fallbackPath) {{
         String value = raw == null ? "" : raw.trim();
         if (value.isEmpty()) {{
-            return new ResourceLocation(fallbackNamespace, fallbackPath);
+            return {_forge_rl_expr(mod, "fallbackNamespace", "fallbackPath")};
         }}
         int split = value.indexOf(':');
         if (split >= 0) {{
-            return new ResourceLocation(value.substring(0, split), value.substring(split + 1));
+            return {_forge_rl_expr(mod, "value.substring(0, split)", "value.substring(split + 1)")};
         }}
-        return new ResourceLocation("{mod.mod_id}", value);
+        return {_forge_rl_expr(mod, f'"{mod.mod_id}"', "value")};
     }}
 
     @Override
@@ -1330,7 +1362,7 @@ public class {model_cn} extends GeoModel<{cn}> {{
 
     @Override
     public ResourceLocation getAnimationResource({cn} animatable) {{
-        return new ResourceLocation("{anim_ns}", "{anim_path}");
+        return {_forge_rl_expr(mod, f'"{anim_ns}"', f'"{anim_path}"')};
     }}
 }}
 """
@@ -1492,9 +1524,21 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_use" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_use"])
+            __import__("inspect").getsource(hooks["on_use"]),
+            py_func=hooks["on_use"],
         )
-        method_blocks.append(f"""\
+        if mod.minecraft_version == "1.21.1":
+            method_blocks.append(f"""\
+    @Override
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+                                  Player player, InteractionHand hand, BlockHitResult hit) {{
+        {f"{cn}BlockEntity blockEntity = level.getBlockEntity(pos) instanceof {cn}BlockEntity be ? be : null;" if has_block_entity else ""}
+        BlockPos soundPos = pos;
+{body}
+        return ItemInteractionResult.SUCCESS;
+    }}""")
+        else:
+            method_blocks.append(f"""\
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                   Player player, InteractionHand hand, BlockHitResult hit) {{
@@ -1507,7 +1551,8 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_place" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_place"])
+            __import__("inspect").getsource(hooks["on_place"]),
+            py_func=hooks["on_place"],
         )
         method_blocks.append(f"""\
     @Override
@@ -1521,7 +1566,8 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_break" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_break"])
+            __import__("inspect").getsource(hooks["on_break"]),
+            py_func=hooks["on_break"],
         )
         method_blocks.append(f"""\
     @Override
@@ -1655,6 +1701,7 @@ package {pkg}.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+{"import net.minecraft.world.ItemInteractionResult;" if mod.minecraft_version == "1.21.1" else ""}
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -1950,7 +1997,8 @@ import software.bernie.geckolib.core.object.PlayState;"""
     tick_method = ""
     if "on_tick" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_tick"])
+            __import__("inspect").getsource(hooks["on_tick"]),
+            py_func=hooks["on_tick"],
         )
         tick_method = f"""
     public static void tick(Level level, BlockPos pos, BlockState state, {cn}BlockEntity blockEntity) {{
@@ -2004,7 +2052,8 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
     method_blocks = []
     if "on_right_click" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_right_click"])
+            __import__("inspect").getsource(hooks["on_right_click"]),
+            py_func=hooks["on_right_click"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2018,7 +2067,8 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
 
     if "on_hold" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_hold"])
+            __import__("inspect").getsource(hooks["on_hold"]),
+            py_func=hooks["on_hold"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2087,7 +2137,8 @@ def _write_single_entity(entity, entity_dir: Path, pkg: str, transpiler: JavaTra
     is_geo = bool(getattr(entity, "geo_model", ""))
     if "on_tick" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_tick"])
+            __import__("inspect").getsource(hooks["on_tick"]),
+            py_func=hooks["on_tick"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2258,7 +2309,7 @@ def _write_events(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
         if ev_name == "player_offhand_change":
             imports.add("import net.minecraftforge.event.TickEvent;")
             imports.add("import net.minecraft.world.InteractionHand;")
-            body = transpiler.transpile_method(ev["source"])
+            body = transpiler.transpile_method(ev["source"], py_func=ev["func"])
             method_blocks.append(f"""\
     @SubscribeEvent
     public static void onPlayerOffhandChange(TickEvent.PlayerTickEvent event) {{
@@ -2289,7 +2340,7 @@ def _write_events(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
             continue
 
         imports.add(ev_info["import"])
-        body = transpiler.transpile_method(ev["source"])
+        body = transpiler.transpile_method(ev["source"], py_func=ev["func"])
 
         setup_line = ev_info.get("setup", "")
         local_lines = "\n".join(ev_info.get("locals", []))
@@ -2334,7 +2385,7 @@ def _write_commands(mod, java_root: Path, pkg: str, transpiler: JavaTranspiler):
 
     command_blocks = []
     for cmd in mod._commands:
-        body = transpiler.transpile_method(cmd["source"])
+        body = transpiler.transpile_method(cmd["source"], py_func=cmd["func"])
         perm = cmd["permission_level"]
         perm_clause = f".requires(s -> s.hasPermission({perm}))" if perm > 0 else ""
         command_blocks.append(f"""\

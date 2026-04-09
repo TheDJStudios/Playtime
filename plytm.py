@@ -3,7 +3,7 @@ import fabricpy as mc
 mod = mc.Mod(
     mod_id="playtime",
     name="Playtime",
-    version="1.0",
+    version="1.1",
     description="Poppy playtime",
     authors=["TheDJStudios"],
     minecraft_version="1.20.1",
@@ -92,15 +92,21 @@ class HoppyPlush(mc.Block):
     block_id = "critter_plush_hoppy"
     display_name = "Critter plush (Hoppy)"
     variable_rotation = True
-    rotation_mode = "floor"
+    rotation_mode = "wall"
     item_model = {
-        "parent": "playtime:deco/critter_plush_hoppy"
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/hoppy_plush"
+        }
     }
     model = {
-        "parent": "playtime:deco/critter_plush_hoppy"
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/hoppy_plush"
+        }
     }
-    hardness = 1.0
-    resistance = 1.0
+    hardness = 0.3
+    resistance = 0.1
     luminance = 0
     slipperiness = 0.6
     material = "wool"
@@ -111,7 +117,65 @@ class HoppyPlush(mc.Block):
     opaque = False
     collidable = False
 
+@mod.register
+class CatNapPlush(mc.Block):
+    block_id = "critter_plush_catnap"
+    display_name = "Critter plush (CatNap)"
+    variable_rotation = True
+    rotation_mode = "wall"
+    item_model = {
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/catnap_plush"
+        }
+    }
+    model = {
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/catnap_plush"
+        }
+    }
+    hardness = 0.3
+    resistance = 0.1
+    luminance = 0
+    slipperiness = 0.6
+    material = "wool"
+    sound_group = "wool"
+    requires_tool = False
+    drops_self = True
+    has_block_entity = False
+    opaque = False
+    collidable = False
 
+mod.shaped_recipe(
+    "critter_plush_catnap_recipe",
+    result="playtime:critter_plush_catnap",
+    pattern=[
+        "A A",
+        "CAC",
+        "A A",
+    ],
+    key={
+        "A": {"item": "minecraft:purple_wool"},
+        "C": {"item": "minecraft:string"}
+    },
+    count=1,
+)
+
+mod.shaped_recipe(
+    "critter_plush_hoppy_recipe",
+    result="playtime:critter_plush_hoppy",
+    pattern=[
+        "A A",
+        "CAC",
+        "A A",
+    ],
+    key={
+        "A": {"item": "minecraft:green_wool"},
+        "C": {"item": "minecraft:string"}
+    },
+    count=1,
+)
 
 playtime_tab = mod.creative_tab(
     tab_id="playtime_tab",
@@ -130,6 +194,7 @@ plushie_tab = mod.creative_tab(
     icon_item="playtime:critter_plush_hoppy"
 )
 plushie_tab.item.add("playtime:critter_plush_hoppy")
+plushie_tab.item.add("playtime:critter_plush_catnap")
 
 mod.add_advancement(
     advancement_id="playtime/playtime",

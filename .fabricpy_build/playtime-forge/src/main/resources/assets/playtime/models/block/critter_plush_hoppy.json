@@ -1,3 +1,6 @@
 {
-  "parent": "playtime:deco/critter_plush_hoppy"
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "playtime:block/critter_plush_hoppy"
+  }
 }

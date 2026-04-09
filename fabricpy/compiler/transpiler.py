@@ -16,6 +16,7 @@ still succeeds and you can fill it in manually.
 """
 
 import ast
+import inspect
 import textwrap
 from pathlib import Path
 from typing import Optional
@@ -34,12 +35,13 @@ class JavaTranspiler:
         self._interop_index_path = Path(interop_index_path) if interop_index_path else None
         self._interop_resolver = InteropResolver.from_index(self._interop_index_path)
         self._interop_notes: list[str] = []
+        self._constant_bindings: dict[str, object] = {}
 
     # ------------------------------------------------------------------ #
     # Public entry point
     # ------------------------------------------------------------------ #
 
-    def transpile_method(self, source: str) -> str:
+    def transpile_method(self, source: str, py_func=None) -> str:
         """
         Given the source of a Python function (as a string), transpile its
         body to a Java code block (just the statements, no braces).
@@ -61,6 +63,7 @@ class JavaTranspiler:
 
         self._lines = []
         self._interop_notes = []
+        self._constant_bindings = self._extract_constant_bindings(func_node, py_func)
         self._depth = 1  # inside a Java method body = 1 indent level
 
         for stmt in func_node.body:
@@ -204,7 +207,12 @@ class JavaTranspiler:
             elif len(args) == 2:
                 self._emit(f"for (int {var} = {args[0]}; {var} < {args[1]}; {var}++) {{")
             elif len(args) == 3:
-                self._emit(f"for (int {var} = {args[0]}; {var} < {args[1]}; {var} += {args[2]}) {{")
+                step_var = f"__fabricpy_step_{var}"
+                self._emit(f"int {step_var} = {args[2]};")
+                self._emit(f'if ({step_var} == 0) {{ throw new IllegalArgumentException("range() step cannot be 0"); }}')
+                self._emit(
+                    f"for (int {var} = {args[0]}; ({step_var} > 0) ? {var} < {args[1]} : {var} > {args[1]}; {var} += {step_var}) {{"
+                )
 
             self._depth += 1
             for s in node.body:
@@ -233,6 +241,8 @@ class JavaTranspiler:
         elif isinstance(node, ast.Name):
             # Map Python True/False/None
             name_map = {"True": "true", "False": "false", "None": "null"}
+            if node.id in self._constant_bindings:
+                return self._literal(self._constant_bindings[node.id])
             return name_map.get(node.id, node.id)
 
         elif isinstance(node, ast.Attribute):
@@ -296,17 +306,53 @@ class JavaTranspiler:
             return f"/* TODO: {type(node).__name__} */"
 
     def _const(self, node: ast.Constant) -> str:
-        if isinstance(node.value, str):
-            escaped = node.value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        return self._literal(node.value)
+
+    def _literal(self, value) -> str:
+        if isinstance(value, str):
+            escaped = value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
             return f'"{escaped}"'
-        elif isinstance(node.value, bool):
-            return "true" if node.value else "false"
-        elif node.value is None:
+        if isinstance(value, bool):
+            return "true" if value else "false"
+        if value is None:
             return "null"
-        elif isinstance(node.value, float):
-            return f"{node.value}f"
-        else:
-            return str(node.value)
+        if isinstance(value, float):
+            return f"{value}f"
+        return str(value)
+
+    def _extract_constant_bindings(self, func_node: ast.FunctionDef, py_func) -> dict[str, object]:
+        if py_func is None:
+            return {}
+
+        try:
+            closure_vars = inspect.getclosurevars(py_func)
+        except Exception:
+            return {}
+
+        local_names = {
+            arg.arg
+            for arg in (
+                list(func_node.args.posonlyargs)
+                + list(func_node.args.args)
+                + list(func_node.args.kwonlyargs)
+            )
+        }
+        if func_node.args.vararg:
+            local_names.add(func_node.args.vararg.arg)
+        if func_node.args.kwarg:
+            local_names.add(func_node.args.kwarg.arg)
+        for node in ast.walk(func_node):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                local_names.add(node.id)
+
+        bindings = {}
+        for scope in (closure_vars.nonlocals, closure_vars.globals):
+            for name, value in scope.items():
+                if name in local_names:
+                    continue
+                if isinstance(value, (str, bool, int, float)) or value is None:
+                    bindings[name] = value
+        return bindings
 
     def _call(self, node: ast.Call) -> str:
         # Build dotted signature for API map lookup
@@ -392,9 +438,10 @@ class JavaTranspiler:
         for op, comp in zip(node.ops, node.comparators):
             java_op = cmp_ops.get(type(op), "==")
             right = self._expr(comp)
-            # String equality: use .equals() for String literals
-            if isinstance(comp, ast.Constant) and isinstance(comp.value, str):
-                parts.append(f"{left}.equals({right})")
+            if isinstance(op, ast.Eq):
+                parts.append(f"java.util.Objects.equals({left}, {right})")
+            elif isinstance(op, ast.NotEq):
+                parts.append(f"!java.util.Objects.equals({left}, {right})")
             else:
                 parts.append(f"{left} {java_op} {right}")
             left = self._expr(comp)

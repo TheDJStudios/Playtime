@@ -344,6 +344,15 @@ def _render_layer_value(value: str) -> str:
     return clean if clean in {"solid", "cutout", "cutout_mipped", "translucent"} else "solid"
 
 
+def _effective_block_render_layer(block) -> str:
+    explicit = _render_layer_value(getattr(block, "render_layer", ""))
+    if explicit != "solid":
+        return explicit
+    if (not block.opaque) or bool(getattr(block, "emissive_texture", "")):
+        return "cutout"
+    return "solid"
+
+
 def _fabric_render_layer_expr(value: str) -> str:
     layer = _render_layer_value(value)
     if layer == "translucent":
@@ -639,7 +648,7 @@ public class {class_name} implements ClientModInitializer {{
 
     @Override
     public void onInitializeClient() {{
-{chr(10).join([f"        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.{block.block_id.upper()}, {_fabric_render_layer_expr(getattr(block, 'render_layer', 'cutout' if (not block.opaque or getattr(block, 'emissive_texture', '')) else 'solid'))});" for block in cutout_blocks])}
+{chr(10).join([f"        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.{block.block_id.upper()}, {_fabric_render_layer_expr(_effective_block_render_layer(block))});" for block in cutout_blocks])}
 {"        ModKeybinds.registerClient();" if has_keybinds else ""}
 {"        ModGeoRenderers.registerClient();" if has_geo else ""}
 {"        FabricPyNetwork.registerClient();" if has_packets else ""}
@@ -652,12 +661,19 @@ public class {class_name} implements ClientModInitializer {{
 def _write_runtime_helpers(mod: "Mod", java_root: Path, pkg: str):
     util_dir = java_root / "util"
     util_dir.mkdir(exist_ok=True)
+    particle_id_expr = "Identifier.of(particleId)" if mod.minecraft_version == "1.21.1" else "new Identifier(particleId)"
+    particle_type_import = (
+        "import net.minecraft.particle.SimpleParticleType;"
+        if mod.minecraft_version == "1.21.1"
+        else "import net.minecraft.particle.DefaultParticleType;"
+    )
+    particle_type_name = "SimpleParticleType" if mod.minecraft_version == "1.21.1" else "DefaultParticleType"
     src = f"""\
 package {pkg}.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.DefaultParticleType;
+{particle_type_import}
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -726,8 +742,8 @@ public class FabricPyRuntime {{
     }}
 
     public static void spawnParticle(World world, String particleId, double x, double y, double z, double dx, double dy, double dz, double speed, int count) {{
-        var particleType = Registries.PARTICLE_TYPE.get(new Identifier(particleId));
-        if (!(particleType instanceof DefaultParticleType defaultParticle)) {{
+        var particleType = Registries.PARTICLE_TYPE.get({particle_id_expr});
+        if (!(particleType instanceof {particle_type_name} defaultParticle)) {{
             return;
         }}
         if (world instanceof ServerWorld serverWorld) {{
@@ -753,7 +769,7 @@ def _write_network(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTransp
     client_cases = []
     for packet in mod._packets:
         if packet.server_source:
-            body = transpiler.transpile_method(packet.server_source)
+            body = transpiler.transpile_method(packet.server_source, py_func=packet.server_func)
             server_cases.append(f"""\
                 case "{packet.packet_id}" -> {{
                     ServerWorld world = player.getServerWorld();
@@ -761,7 +777,7 @@ def _write_network(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTransp
 {body}
                 }}""")
         if packet.client_source:
-            body = transpiler.transpile_method(packet.client_source)
+            body = transpiler.transpile_method(packet.client_source, py_func=packet.client_func)
             client_cases.append(f"""\
                 case "{packet.packet_id}" -> {{
                     var player = client.player;
@@ -860,10 +876,10 @@ def _write_screens(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTransp
         cn = f"{to_pascal(screen.screen_id.replace('/', '_'))}Screen"
         open_body = ""
         if screen.open_source:
-            open_body = transpiler.transpile_method(screen.open_source)
+            open_body = transpiler.transpile_method(screen.open_source, py_func=screen.open_func)
         button_lines = []
         for button in screen.buttons:
-            body = transpiler.transpile_method(button.source) if button.source else "            // No handler"
+            body = transpiler.transpile_method(button.source, py_func=button.func) if button.source else "            // No handler"
             button_lines.append(f"""\
         this.addDrawableChild(net.minecraft.client.gui.widget.ButtonWidget.builder(net.minecraft.text.Text.literal("{button.text}"), widget -> {{
             var client = this.client;
@@ -1024,7 +1040,7 @@ public class {renderer_cn} extends GeoBlockRenderer<{cn}BlockEntity> {{
 
     @Override
     public RenderLayer getRenderType({cn}BlockEntity animatable, Identifier texture, VertexConsumerProvider bufferSource, float partialTick) {{
-        return {_fabric_render_layer_expr(getattr(block, "render_layer", "translucent" if not block.opaque else "solid"))};
+        return {_fabric_render_layer_expr(_effective_block_render_layer(block))};
     }}
 
     @Override
@@ -1162,7 +1178,7 @@ def _write_mod_keybinds(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaT
             f'new KeyBinding("{title_key}", InputUtil.Type.KEYSYM, {_keybind_code_expr(bind)}, "{category_key}"));'
         )
         if bind.source:
-            body = transpiler.transpile_method(bind.source)
+            body = transpiler.transpile_method(bind.source, py_func=bind.func)
             handlers.append(f"""\
             while ({const_name}.wasPressed()) {{
                 if (client.player == null || client.world == null) {{
@@ -1539,9 +1555,21 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_use" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_use"])
+            __import__("inspect").getsource(hooks["on_use"]),
+            py_func=hooks["on_use"],
         )
-        method_blocks.append(f"""\
+        if mod.minecraft_version == "1.21.1":
+            method_blocks.append(f"""\
+    @Override
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
+                               PlayerEntity player, Hand hand, BlockHitResult hit) {{
+        {f"{cn}BlockEntity blockEntity = world.getBlockEntity(pos) instanceof {cn}BlockEntity be ? be : null;" if has_block_entity else ""}
+        BlockPos soundPos = pos;
+{body}
+        return ItemActionResult.SUCCESS;
+    }}""")
+        else:
+            method_blocks.append(f"""\
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos,
                                PlayerEntity player, Hand hand, BlockHitResult hit) {{
@@ -1554,7 +1582,8 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_place" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_place"])
+            __import__("inspect").getsource(hooks["on_place"]),
+            py_func=hooks["on_place"],
         )
         method_blocks.append(f"""\
     @Override
@@ -1568,7 +1597,8 @@ def _write_single_block(mod, block, block_dir: Path, pkg: str, transpiler: JavaT
 
     if "on_break" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_break"])
+            __import__("inspect").getsource(hooks["on_break"]),
+            py_func=hooks["on_break"],
         )
         method_blocks.append(f"""\
     @Override
@@ -1711,7 +1741,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
+{"import net.minecraft.util.ItemActionResult;" if mod.minecraft_version == "1.21.1" else "import net.minecraft.util.ActionResult;"}
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -1985,7 +2015,8 @@ import software.bernie.geckolib.core.object.PlayState;"""
     tick_method = ""
     if "on_tick" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_tick"])
+            __import__("inspect").getsource(hooks["on_tick"]),
+            py_func=hooks["on_tick"],
         )
         tick_method = f"""
     public static void tick(World world, BlockPos pos, BlockState state, {cn}BlockEntity blockEntity) {{
@@ -2071,7 +2102,8 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
 
     if "on_right_click" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_right_click"])
+            __import__("inspect").getsource(hooks["on_right_click"]),
+            py_func=hooks["on_right_click"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2085,7 +2117,8 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
 
     if "on_hold" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_hold"])
+            __import__("inspect").getsource(hooks["on_hold"]),
+            py_func=hooks["on_hold"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2158,7 +2191,8 @@ def _write_single_entity(mod, entity, entity_dir: Path, pkg: str, transpiler: Ja
 
     if "on_tick" in hooks:
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_tick"])
+            __import__("inspect").getsource(hooks["on_tick"]),
+            py_func=hooks["on_tick"],
         )
         method_blocks.append(f"""\
     @Override
@@ -2335,7 +2369,7 @@ def _write_events(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTranspi
         if ev_name == "player_offhand_change":
             imports.add("import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;")
             imports.add("import net.minecraft.util.Hand;")
-            body = transpiler.transpile_method(ev["source"])
+            body = transpiler.transpile_method(ev["source"], py_func=ev["func"])
             register_blocks.append(f"""\
         ServerTickEvents.END_SERVER_TICK.register((server) -> {{
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {{
@@ -2362,7 +2396,7 @@ def _write_events(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTranspi
             continue
 
         imports.add(ev_info["import"])
-        body = transpiler.transpile_method(ev["source"])
+        body = transpiler.transpile_method(ev["source"], py_func=ev["func"])
         filled = ev_info["register"].format(body=body.strip())
         register_blocks.append(f"        {filled}")
 
@@ -2400,7 +2434,7 @@ def _write_commands(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTrans
     command_blocks = []
 
     for cmd in mod._commands:
-        body = transpiler.transpile_method(cmd["source"])
+        body = transpiler.transpile_method(cmd["source"], py_func=cmd["func"])
         perm = cmd["permission_level"]
         perm_clause = ""
         if perm > 0:
@@ -2475,7 +2509,8 @@ def _write_single_mixin(mod, mx, mixin_dir: Path, pkg: str, transpiler: JavaTran
         cancellable = hook_args.get("cancellable", False)
 
         body = transpiler.transpile_method(
-            __import__("inspect").getsource(func)
+            __import__("inspect").getsource(func),
+            py_func=func,
         )
         ci_param = ", CallbackInfo ci" if not cancellable else ", CallbackInfo ci /* cancellable */"
         method_blocks.append(f"""\
