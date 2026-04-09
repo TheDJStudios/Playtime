@@ -40,7 +40,7 @@ public class FabricPyRuntime {
     }
 
     public static BlockHitResult raycastBlock(Level level, Vec3 start, Vec3 end) {
-        return level.clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, null));
+        return level.clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, (net.minecraft.world.entity.Entity)null));
     }
 
     public static String raycastBlockId(Level level, Vec3 start, Vec3 end) {

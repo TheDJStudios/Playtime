@@ -9,9 +9,11 @@ public class PlaytimeClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HAND_SCANNER, RenderLayer.getSolid());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HAND_SCANNER_RED_RIGHT, RenderLayer.getSolid());
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CRITTER_PLUSH_HOPPY, RenderLayer.getSolid());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HAND_SCANNER, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.HAND_SCANNER_RED_RIGHT, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CRITTER_PLUSH_HOPPY, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CRITTER_PLUSH_CATNAP, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CRITTER_PLUSH_DOGDAY, RenderLayer.getCutout());
 
 
 

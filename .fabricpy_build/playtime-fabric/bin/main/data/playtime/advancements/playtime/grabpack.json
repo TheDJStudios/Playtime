@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "playtime:grabpack_left_blue"
+    },
+    "title": {
+      "translate": "advancement.playtime.playtime.grabpack.title"
+    },
+    "description": {
+      "translate": "advancement.playtime.playtime.grabpack.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "playtime:grabpack_cannon"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "parent": "playtime:playtime/playtime"
+}

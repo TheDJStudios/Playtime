@@ -28,9 +28,11 @@ public class ModCreativeTabs {
     public static final RegistryObject<CreativeModeTab> PLAYTIME_PLUSHIES_TAB = TABS.register("playtime_plushies_tab", () ->
         CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.playtime.playtime_plushies_tab"))
-            .icon(() -> new ItemStack(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "critter_plush_hoppy"))))
+            .icon(() -> new ItemStack(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "critter_plush_dogday"))))
             .displayItems((parameters, output) -> {
                 output.accept(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "critter_plush_hoppy")));
+                output.accept(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "critter_plush_catnap")));
+                output.accept(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "critter_plush_dogday")));
             })
             .build()
     );

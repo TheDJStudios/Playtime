@@ -147,6 +147,36 @@ class CatNapPlush(mc.Block):
     opaque = False
     collidable = False
 
+@mod.register
+class DogDayPlush(mc.Block):
+    block_id = "critter_plush_dogday"
+    display_name = "Critter plush (Dogday)"
+    variable_rotation = True
+    rotation_mode = "wall"
+    item_model = {
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/dogday_plush"
+        }
+    }
+    model = {
+        "parent": "playtime:block/deco/critter_plush",
+        "textures": {
+            "1": "playtime:block/deco/dogday_plush"
+        }
+    }
+    hardness = 0.3
+    resistance = 0.1
+    luminance = 0
+    slipperiness = 0.6
+    material = "wool"
+    sound_group = "wool"
+    requires_tool = False
+    drops_self = True
+    has_block_entity = False
+    opaque = False
+    collidable = False
+
 mod.shaped_recipe(
     "critter_plush_catnap_recipe",
     result="playtime:critter_plush_catnap",
@@ -157,6 +187,21 @@ mod.shaped_recipe(
     ],
     key={
         "A": {"item": "minecraft:purple_wool"},
+        "C": {"item": "minecraft:string"}
+    },
+    count=1,
+)
+
+mod.shaped_recipe(
+    "critter_plush_dogday_recipe",
+    result="playtime:critter_plush_dogday",
+    pattern=[
+        "A A",
+        "CAC",
+        "A A",
+    ],
+    key={
+        "A": {"item": "minecraft:orange_wool"},
         "C": {"item": "minecraft:string"}
     },
     count=1,
@@ -191,10 +236,11 @@ playtime_tab.item.add("playtime:grabpack_right_red")
 plushie_tab = mod.creative_tab(
     tab_id="playtime_plushies_tab",
     title="Plushies",
-    icon_item="playtime:critter_plush_hoppy"
+    icon_item="playtime:critter_plush_dogday"
 )
 plushie_tab.item.add("playtime:critter_plush_hoppy")
 plushie_tab.item.add("playtime:critter_plush_catnap")
+plushie_tab.item.add("playtime:critter_plush_dogday")
 
 mod.add_advancement(
     advancement_id="playtime/playtime",

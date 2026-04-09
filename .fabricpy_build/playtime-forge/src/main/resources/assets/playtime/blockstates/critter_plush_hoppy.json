@@ -2,22 +2,18 @@
   "variants": {
     "facing=north": {
       "model": "playtime:block/critter_plush_hoppy",
-      "x": 90,
       "y": 0
     },
     "facing=east": {
       "model": "playtime:block/critter_plush_hoppy",
-      "x": 90,
       "y": 90
     },
     "facing=south": {
       "model": "playtime:block/critter_plush_hoppy",
-      "x": 90,
       "y": 180
     },
     "facing=west": {
       "model": "playtime:block/critter_plush_hoppy",
-      "x": 90,
       "y": 270
     }
   }

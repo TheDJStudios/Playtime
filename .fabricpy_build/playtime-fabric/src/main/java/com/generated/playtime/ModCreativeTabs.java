@@ -29,9 +29,11 @@ public class ModCreativeTabs {
         new Identifier(Playtime.MOD_ID, "playtime_plushies_tab"),
         FabricItemGroup.builder()
             .displayName(Text.translatable("itemGroup.playtime.playtime_plushies_tab"))
-            .icon(() -> new ItemStack(Registries.ITEM.get(new Identifier("playtime", "critter_plush_hoppy"))))
+            .icon(() -> new ItemStack(Registries.ITEM.get(new Identifier("playtime", "critter_plush_dogday"))))
             .entries((displayContext, entries) -> {
                 entries.add(Registries.ITEM.get(new Identifier("playtime", "critter_plush_hoppy")));
+                entries.add(Registries.ITEM.get(new Identifier("playtime", "critter_plush_catnap")));
+                entries.add(Registries.ITEM.get(new Identifier("playtime", "critter_plush_dogday")));
             })
             .build()
     );

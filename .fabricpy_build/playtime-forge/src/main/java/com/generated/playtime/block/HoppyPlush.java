@@ -3,6 +3,7 @@ package com.generated.playtime.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +42,7 @@ public class HoppyPlush extends Block {
 
 
     public HoppyPlush() {
-        super(BlockBehaviour.Properties.of().strength(1.0f, 1.0f).lightLevel(state -> 0).friction(0.6f).noCollission().noOcclusion());
+        super(BlockBehaviour.Properties.of().strength(0.3f, 0.1f).lightLevel(state -> 0).friction(0.6f).noCollission().noOcclusion());
 
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }

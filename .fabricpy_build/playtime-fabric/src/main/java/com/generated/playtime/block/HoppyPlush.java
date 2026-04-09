@@ -42,7 +42,7 @@ public class HoppyPlush extends Block {
 
 
     public HoppyPlush() {
-        super(FabricBlockSettings.create().strength(1.0f, 1.0f).luminance(state -> 0).slipperiness(0.6f).sounds(BlockSoundGroup.WOOL).noCollision().nonOpaque());
+        super(FabricBlockSettings.create().strength(0.3f, 0.1f).luminance(state -> 0).slipperiness(0.6f).sounds(BlockSoundGroup.WOOL).noCollision().nonOpaque());
 
         setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }

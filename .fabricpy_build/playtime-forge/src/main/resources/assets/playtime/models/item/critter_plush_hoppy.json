@@ -1,3 +1,6 @@
 {
-  "parent": "playtime:deco/critter_plush_hoppy"
+  "parent": "playtime:block/deco/critter_plush",
+  "textures": {
+    "1": "playtime:block/deco/hoppy_plush"
+  }
 }

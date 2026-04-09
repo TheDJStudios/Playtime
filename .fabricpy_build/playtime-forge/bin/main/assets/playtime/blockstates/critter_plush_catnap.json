@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "playtime:block/critter_plush_catnap",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "playtime:block/critter_plush_catnap",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "playtime:block/critter_plush_catnap",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "playtime:block/critter_plush_catnap",
+      "y": 270
+    }
+  }
+}
