@@ -132,7 +132,8 @@ class CatNapPlush(mc.Block):
     model = {
         "parent": "playtime:block/deco/critter_plush",
         "textures": {
-            "1": "playtime:block/deco/catnap_plush"
+            "1": "playtime:block/deco/catnap_plush",
+            "particle": "playtime:block/deco/catnap_plush"
         }
     }
     hardness = 0.3
@@ -162,7 +163,8 @@ class DogDayPlush(mc.Block):
     model = {
         "parent": "playtime:block/deco/critter_plush",
         "textures": {
-            "1": "playtime:block/deco/dogday_plush"
+            "1": "playtime:block/deco/dogday_plush",
+            "particle": "playtime:block/deco/dogday_plush"
         }
     }
     hardness = 0.3
