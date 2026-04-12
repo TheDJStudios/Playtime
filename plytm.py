@@ -66,27 +66,7 @@ class GrabPackCannon(mc.Item):
     model = {
         "parent": "playtime:item/tool/grabpack"
     }
-@mod.register
-class GrabPackLeftBlue(mc.Item):
-    item_id = "grabpack_left_blue"
-    display_name = "Grabpack Left (Blue)"
-    max_stack_size = 1
-    max_damage = 0
-    rarity = "epic"
-    model = {
-        "parent": "playtime:item/tool/grabpack_left_blue"
-    }
-@mod.register
-class GrabPackRightRed(mc.Item):
-    item_id = "grabpack_right_red"
-    display_name = "Grabpack right (red)"
-    max_stack_size = 1
-    max_damage = 0
-    rarity = "epic"
-    model = {
-        "parent": "playtime:item/tool/grabpack_right_red"
-    }
-            
+    
 @mod.register
 class HoppyPlush(mc.Block):
     block_id = "critter_plush_hoppy"
@@ -254,9 +234,9 @@ mod.add_advancement(
 )
 mod.item_advancement(
     advancement_id="playtime/grabpack",
-    title="Grabby",
-    description="Obtain a Grabpack",
-    icon_item="playtime:grabpack_left_blue",
+    title="A step into an unknown world",
+    description="Obtain a Grabpack cannon.",
+    icon_item="playtime:grabpack_cannon",
     background="minecraft:textures/gui/advancements/backgrounds/stone.png",
     frame="task",
     parent="playtime:playtime/playtime",
