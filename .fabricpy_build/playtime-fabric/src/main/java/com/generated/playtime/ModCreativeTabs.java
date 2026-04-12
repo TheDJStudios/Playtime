@@ -19,8 +19,8 @@ public class ModCreativeTabs {
                 entries.add(Registries.ITEM.get(new Identifier("playtime", "hand_scanner")));
                 entries.add(Registries.ITEM.get(new Identifier("playtime", "hand_scanner_red_right")));
                 entries.add(ModItems.GRABPACK_CANNON);
-                entries.add(ModItems.GRABPACK_LEFT_BLUE);
-                entries.add(ModItems.GRABPACK_RIGHT_RED);
+                entries.add(ModItems.COIL);
+                entries.add(ModItems.BLUE_HAND);
             })
             .build()
     );

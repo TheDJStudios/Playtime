@@ -66,7 +66,30 @@ class GrabPackCannon(mc.Item):
     model = {
         "parent": "playtime:item/tool/grabpack"
     }
-    
+
+@mod.register
+class CoilItem(mc.Item):
+    item_id = "coil"
+    display_name = "Coil"
+    max_stack_size = 16
+    max_damage = 0
+    rarity = "common"
+    texture = "materials/coil"
+
+
+@mod.register
+class BlueHand(mc.Item):
+    item_id = "blue_hand"
+    display_name = "Blue Hand"
+    max_stack_size = 1
+    max_damage = 0
+    rarity = "uncommon"
+    model = {
+        "parent": "playtime:item/hands/blue_hand"
+    }
+
+
+
 @mod.register
 class HoppyPlush(mc.Block):
     block_id = "critter_plush_hoppy"
@@ -175,6 +198,20 @@ mod.shaped_recipe(
 )
 
 mod.shaped_recipe(
+    "coil_recipe",
+    result="playtime:coil",
+    pattern=[
+        "AAA",
+        "A A",
+        "AAA",
+    ],
+    key={
+        "A": {"item": "minecraft:iron_ingot"},
+    },
+    count=1,
+)
+
+mod.shaped_recipe(
     "critter_plush_dogday_recipe",
     result="playtime:critter_plush_dogday",
     pattern=[
@@ -212,8 +249,8 @@ playtime_tab = mod.creative_tab(
 playtime_tab.item.add("playtime:hand_scanner")
 playtime_tab.item.add("playtime:hand_scanner_red_right")
 playtime_tab.item.add("playtime:grabpack_cannon")
-playtime_tab.item.add("playtime:grabpack_left_blue")
-playtime_tab.item.add("playtime:grabpack_right_red")
+playtime_tab.item.add("playtime:coil")
+playtime_tab.item.add("playtime:blue_hand")
 
 plushie_tab = mod.creative_tab(
     tab_id="playtime_plushies_tab",

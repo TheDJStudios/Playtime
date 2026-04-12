@@ -20,8 +20,8 @@ public class ModCreativeTabs {
                 output.accept(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "hand_scanner")));
                 output.accept(ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation("playtime", "hand_scanner_red_right")));
                 output.accept(ModItems.GRABPACK_CANNON.get());
-                output.accept(ModItems.GRABPACK_LEFT_BLUE.get());
-                output.accept(ModItems.GRABPACK_RIGHT_RED.get());
+                output.accept(ModItems.COIL.get());
+                output.accept(ModItems.BLUE_HAND.get());
             })
             .build()
     );

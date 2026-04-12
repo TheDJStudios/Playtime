@@ -24,6 +24,22 @@ class Gear(mc.Item):
 - `max_damage`
 - `rarity`
 - `fireproof`
+- `bundle_inventory`
+- `inventory_slots`
+- `inventory_slot_capacity`
+- `inventory_total_capacity`
+- `inventory_visible_in_tooltip`
+- `inventory_tooltip_show_empty`
+- `inventory_tooltip_slot_limit`
+- `inventory_insert_from_offhand`
+- `inventory_extract_from_use`
+- `inventory_extract_requires_sneak`
+- `inventory_extract_order`
+- `inventory_whitelist`
+- `inventory_blacklist`
+- `inventory_slot_whitelists`
+- `inventory_slot_blacklists`
+- `inventory_slot_labels`
 - `food_hunger`
 - `food_saturation`
 - `food_always_edible`
@@ -35,6 +51,85 @@ class Gear(mc.Item):
 - `emissive_level`
 - `textures`
 - `model`
+
+## Bundle-Style Item Inventory
+
+Set `bundle_inventory = True` to make an item behave like a vanilla bundle.
+
+```python
+@mod.register
+class ToolSatchel(mc.Item):
+    item_id = "tool_satchel"
+    display_name = "Tool Satchel"
+    texture = "bags/tool_satchel"
+    bundle_inventory = True
+```
+
+What this does:
+
+- the generated item class extends Minecraft's `BundleItem`
+- the item stores other item stacks inside itself
+- the item uses the normal bundle-style inventory interactions and tooltip behavior
+- `max_stack_size` is forced to `1` while this is enabled
+
+What this does not do:
+
+- it does not generate a chest-style menu screen
+- it is not a general custom container API yet
+
+## Managed Slot Item Inventory
+
+Set `inventory_slots` above `0` to use FabricPy's managed item inventory instead of vanilla bundle behavior.
+
+```python
+@mod.register
+class ToolSatchel(mc.Item):
+    item_id = "tool_satchel"
+    display_name = "Tool Satchel"
+    texture = "bags/tool_satchel"
+
+    inventory_slots = 6
+    inventory_slot_capacity = 16
+    inventory_total_capacity = 48
+    inventory_visible_in_tooltip = True
+    inventory_tooltip_show_empty = True
+    inventory_tooltip_slot_limit = 6
+    inventory_insert_from_offhand = True
+    inventory_extract_from_use = True
+    inventory_extract_requires_sneak = True
+    inventory_extract_order = "last"
+
+    inventory_whitelist = [
+        "minecraft:apple",
+        "minecraft:coal",
+        "minecraft:stick",
+    ]
+    inventory_slot_whitelists = {
+        1: ["minecraft:coal"],
+        2: ["minecraft:stick"],
+    }
+    inventory_slot_labels = {
+        0: "Input",
+        1: "Fuel",
+        2: "Core",
+    }
+```
+
+What this does:
+
+- stores items in numbered internal slots on the stack itself
+- shows slot contents in the tooltip
+- supports per-item and per-slot allow/block filters
+- inserts from the opposite hand on use
+- extracts from the configured slot order on use
+- forces `max_stack_size` to `1`
+
+Important behavior:
+
+- if `inventory_slots > 0`, this managed inventory path takes precedence over `bundle_inventory`
+- slot dictionaries are zero-based
+- extraction normally happens while sneaking by default
+- this is still not a chest-style menu screen; it is a stack-carried inventory with built-in use behavior
 
 ## Texture Resolution
 

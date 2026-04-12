@@ -2060,6 +2060,417 @@ _RARITY_MAP = {
 }
 
 
+def _normalize_item_inventory_strings(raw) -> list[str]:
+    if raw is None:
+        return []
+    if isinstance(raw, str):
+        values = [raw]
+    elif isinstance(raw, (list, tuple, set)):
+        values = list(raw)
+    else:
+        values = [raw]
+    out: list[str] = []
+    for value in values:
+        text = str(value).strip()
+        if text and text not in out:
+            out.append(text)
+    return out
+
+
+def _normalize_item_inventory_slot_map(raw, slots: int) -> list[list[str]]:
+    rows = [[] for _ in range(slots)]
+    if not isinstance(raw, dict):
+        return rows
+    for key, value in raw.items():
+        try:
+            slot = int(key)
+        except (TypeError, ValueError):
+            continue
+        if 0 <= slot < slots:
+            rows[slot] = _normalize_item_inventory_strings(value)
+    return rows
+
+
+def _normalize_item_inventory_slot_labels(raw, slots: int) -> list[str]:
+    labels = ["" for _ in range(slots)]
+    if not isinstance(raw, dict):
+        return labels
+    for key, value in raw.items():
+        try:
+            slot = int(key)
+        except (TypeError, ValueError):
+            continue
+        if 0 <= slot < slots and value is not None:
+            labels[slot] = str(value)
+    return labels
+
+
+def _item_inventory_spec(item) -> dict:
+    slots = max(0, int(getattr(item, "inventory_slots", 0) or 0))
+    slot_capacity = max(1, min(64, int(getattr(item, "inventory_slot_capacity", 64) or 64)))
+    total_capacity = max(0, int(getattr(item, "inventory_total_capacity", 0) or 0))
+    tooltip_limit = max(0, int(getattr(item, "inventory_tooltip_slot_limit", 8) or 0))
+    extract_order = str(getattr(item, "inventory_extract_order", "last") or "last").strip().lower()
+    if extract_order not in {"first", "last"}:
+        extract_order = "last"
+    return {
+        "slots": slots,
+        "slot_capacity": slot_capacity,
+        "total_capacity": total_capacity,
+        "tooltip_visible": bool(getattr(item, "inventory_visible_in_tooltip", True)),
+        "tooltip_show_empty": bool(getattr(item, "inventory_tooltip_show_empty", False)),
+        "tooltip_limit": tooltip_limit,
+        "insert_from_offhand": bool(getattr(item, "inventory_insert_from_offhand", True)),
+        "extract_from_use": bool(getattr(item, "inventory_extract_from_use", True)),
+        "extract_requires_sneak": bool(getattr(item, "inventory_extract_requires_sneak", True)),
+        "extract_order": extract_order,
+        "whitelist": _normalize_item_inventory_strings(getattr(item, "inventory_whitelist", [])),
+        "blacklist": _normalize_item_inventory_strings(getattr(item, "inventory_blacklist", [])),
+        "slot_whitelists": _normalize_item_inventory_slot_map(getattr(item, "inventory_slot_whitelists", {}), slots),
+        "slot_blacklists": _normalize_item_inventory_slot_map(getattr(item, "inventory_slot_blacklists", {}), slots),
+        "slot_labels": _normalize_item_inventory_slot_labels(getattr(item, "inventory_slot_labels", {}), slots),
+    }
+
+
+def _java_string_literal(value) -> str:
+    return json.dumps("" if value is None else str(value))
+
+
+def _java_string_array(values: list[str]) -> str:
+    return "new String[] {" + ", ".join(_java_string_literal(value) for value in values) + "}"
+
+
+def _java_string_matrix(rows: list[list[str]]) -> str:
+    return "new String[][] {" + ", ".join(_java_string_array(row) for row in rows) + "}"
+
+
+def _fabric_managed_inventory_support(spec: dict) -> dict:
+    imports = "\n".join([
+        "import java.util.List;",
+        "import net.minecraft.client.item.TooltipContext;",
+        "import net.minecraft.item.Items;",
+        "import net.minecraft.nbt.NbtCompound;",
+        "import net.minecraft.nbt.NbtElement;",
+        "import net.minecraft.nbt.NbtList;",
+    ])
+    members = f"""
+    private static final String INVENTORY_KEY = "fabricpy_inventory";
+    private static final int INVENTORY_SLOT_COUNT = {spec["slots"]};
+    private static final int INVENTORY_SLOT_CAPACITY = {spec["slot_capacity"]};
+    private static final int INVENTORY_TOTAL_CAPACITY = {spec["total_capacity"]};
+    private static final boolean INVENTORY_VISIBLE_IN_TOOLTIP = {"true" if spec["tooltip_visible"] else "false"};
+    private static final boolean INVENTORY_TOOLTIP_SHOW_EMPTY = {"true" if spec["tooltip_show_empty"] else "false"};
+    private static final int INVENTORY_TOOLTIP_SLOT_LIMIT = {spec["tooltip_limit"]};
+    private static final boolean INVENTORY_INSERT_FROM_OFFHAND = {"true" if spec["insert_from_offhand"] else "false"};
+    private static final boolean INVENTORY_EXTRACT_FROM_USE = {"true" if spec["extract_from_use"] else "false"};
+    private static final boolean INVENTORY_EXTRACT_REQUIRES_SNEAK = {"true" if spec["extract_requires_sneak"] else "false"};
+    private static final String INVENTORY_EXTRACT_ORDER = {_java_string_literal(spec["extract_order"])};
+    private static final String[] INVENTORY_WHITELIST = {_java_string_array(spec["whitelist"])};
+    private static final String[] INVENTORY_BLACKLIST = {_java_string_array(spec["blacklist"])};
+    private static final String[] INVENTORY_SLOT_LABELS = {_java_string_array(spec["slot_labels"])};
+    private static final String[][] INVENTORY_SLOT_WHITELISTS = {_java_string_matrix(spec["slot_whitelists"])};
+    private static final String[][] INVENTORY_SLOT_BLACKLISTS = {_java_string_matrix(spec["slot_blacklists"])};
+
+    private NbtList getManagedInventoryList(ItemStack container) {{
+        NbtCompound nbt = container.getOrCreateNbt();
+        if (!nbt.contains(INVENTORY_KEY, NbtElement.LIST_TYPE)) {{
+            nbt.put(INVENTORY_KEY, new NbtList());
+        }}
+        NbtList list = nbt.getList(INVENTORY_KEY, NbtElement.COMPOUND_TYPE);
+        while (list.size() < INVENTORY_SLOT_COUNT) {{
+            list.add(new NbtCompound());
+        }}
+        while (list.size() > INVENTORY_SLOT_COUNT) {{
+            list.remove(list.size() - 1);
+        }}
+        nbt.put(INVENTORY_KEY, list);
+        return list;
+    }}
+
+    private NbtCompound getManagedSlot(ItemStack container, int slot) {{
+        if (slot < 0 || slot >= INVENTORY_SLOT_COUNT) {{
+            return new NbtCompound();
+        }}
+        return getManagedInventoryList(container).getCompound(slot).copy();
+    }}
+
+    private void setManagedSlot(ItemStack container, int slot, String itemId, int count) {{
+        if (slot < 0 || slot >= INVENTORY_SLOT_COUNT) {{
+            return;
+        }}
+        NbtList list = getManagedInventoryList(container);
+        NbtCompound entry = new NbtCompound();
+        if (itemId != null && !itemId.isBlank() && count > 0) {{
+            entry.putString("item", itemId);
+            entry.putInt("count", count);
+        }}
+        list.set(slot, entry);
+        container.getOrCreateNbt().put(INVENTORY_KEY, list);
+    }}
+
+    private String getManagedSlotItemId(ItemStack container, int slot) {{
+        NbtCompound entry = getManagedSlot(container, slot);
+        return entry.contains("item") ? entry.getString("item") : "";
+    }}
+
+    private int getManagedSlotCount(ItemStack container, int slot) {{
+        NbtCompound entry = getManagedSlot(container, slot);
+        return entry.contains("count") ? Math.max(0, entry.getInt("count")) : 0;
+    }}
+
+    private int getManagedStoredTotal(ItemStack container) {{
+        int total = 0;
+        for (int slot = 0; slot < INVENTORY_SLOT_COUNT; slot++) {{
+            total += getManagedSlotCount(container, slot);
+        }}
+        return total;
+    }}
+
+    private boolean hasManagedContents(ItemStack container) {{
+        return getManagedStoredTotal(container) > 0;
+    }}
+
+    private int getManagedTotalCapacity() {{
+        return INVENTORY_TOTAL_CAPACITY > 0 ? INVENTORY_TOTAL_CAPACITY : (INVENTORY_SLOT_COUNT * INVENTORY_SLOT_CAPACITY);
+    }}
+
+    private boolean matchesInventoryRule(String[] rules, String itemId) {{
+        if (rules == null || rules.length == 0) {{
+            return false;
+        }}
+        for (String rule : rules) {{
+            if (rule != null && !rule.isBlank() && rule.equals(itemId)) {{
+                return true;
+            }}
+        }}
+        return false;
+    }}
+
+    private boolean canStoreManagedItem(int slot, String itemId) {{
+        if (itemId == null || itemId.isBlank()) {{
+            return false;
+        }}
+        if (INVENTORY_WHITELIST.length > 0 && !matchesInventoryRule(INVENTORY_WHITELIST, itemId)) {{
+            return false;
+        }}
+        if (matchesInventoryRule(INVENTORY_BLACKLIST, itemId)) {{
+            return false;
+        }}
+        if (slot < 0 || slot >= INVENTORY_SLOT_COUNT) {{
+            return false;
+        }}
+        if (INVENTORY_SLOT_WHITELISTS[slot].length > 0 && !matchesInventoryRule(INVENTORY_SLOT_WHITELISTS[slot], itemId)) {{
+            return false;
+        }}
+        if (matchesInventoryRule(INVENTORY_SLOT_BLACKLISTS[slot], itemId)) {{
+            return false;
+        }}
+        return true;
+    }}
+
+    private int insertManagedStack(ItemStack container, ItemStack source) {{
+        if (source.isEmpty() || source.getItem() == this) {{
+            return 0;
+        }}
+        String itemId = Registries.ITEM.getId(source.getItem()).toString();
+        int remainingCapacity = getManagedTotalCapacity() - getManagedStoredTotal(container);
+        if (remainingCapacity <= 0) {{
+            return 0;
+        }}
+        int moved = 0;
+        for (int pass = 0; pass < 2; pass++) {{
+            for (int slot = 0; slot < INVENTORY_SLOT_COUNT; slot++) {{
+                String currentId = getManagedSlotItemId(container, slot);
+                int currentCount = getManagedSlotCount(container, slot);
+                boolean empty = currentId.isBlank() || currentCount <= 0;
+                if (pass == 0 && (empty || !currentId.equals(itemId))) {{
+                    continue;
+                }}
+                if (pass == 1 && !empty) {{
+                    continue;
+                }}
+                if (!canStoreManagedItem(slot, itemId)) {{
+                    continue;
+                }}
+                int maxForSlot = Math.min(INVENTORY_SLOT_CAPACITY, source.getMaxCount());
+                int slotRoom = maxForSlot - currentCount;
+                if (slotRoom <= 0) {{
+                    continue;
+                }}
+                int toMove = Math.min(source.getCount(), Math.min(slotRoom, remainingCapacity));
+                if (toMove <= 0) {{
+                    return moved;
+                }}
+                setManagedSlot(container, slot, itemId, currentCount + toMove);
+                source.decrement(toMove);
+                moved += toMove;
+                remainingCapacity -= toMove;
+                if (source.isEmpty() || remainingCapacity <= 0) {{
+                    return moved;
+                }}
+            }}
+        }}
+        return moved;
+    }}
+
+    private ItemStack extractManagedStack(ItemStack container) {{
+        int start = "first".equals(INVENTORY_EXTRACT_ORDER) ? 0 : INVENTORY_SLOT_COUNT - 1;
+        int end = "first".equals(INVENTORY_EXTRACT_ORDER) ? INVENTORY_SLOT_COUNT : -1;
+        int step = "first".equals(INVENTORY_EXTRACT_ORDER) ? 1 : -1;
+        for (int slot = start; slot != end; slot += step) {{
+            String itemId = getManagedSlotItemId(container, slot);
+            int currentCount = getManagedSlotCount(container, slot);
+            if (currentCount <= 0 || itemId.isBlank()) {{
+                continue;
+            }}
+            Identifier id = Identifier.tryParse(itemId);
+            if (id == null) {{
+                setManagedSlot(container, slot, "", 0);
+                continue;
+            }}
+            Item storedItem = Registries.ITEM.get(id);
+            if (storedItem == null || storedItem == Items.AIR) {{
+                setManagedSlot(container, slot, "", 0);
+                continue;
+            }}
+            int amount = Math.min(currentCount, Math.min(INVENTORY_SLOT_CAPACITY, storedItem.getMaxCount()));
+            setManagedSlot(container, slot, itemId, currentCount - amount);
+            return new ItemStack(storedItem, amount);
+        }}
+        return ItemStack.EMPTY;
+    }}
+
+    private boolean giveManagedExtractedStack(PlayerEntity user, Hand usedHand, ItemStack extracted) {{
+        if (extracted.isEmpty()) {{
+            return false;
+        }}
+        Hand otherHand = usedHand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        ItemStack otherStack = user.getStackInHand(otherHand);
+        if (otherStack.isEmpty()) {{
+            user.setStackInHand(otherHand, extracted);
+            return true;
+        }}
+        if (otherStack.isOf(extracted.getItem()) && otherStack.getCount() < otherStack.getMaxCount()) {{
+            int move = Math.min(extracted.getCount(), otherStack.getMaxCount() - otherStack.getCount());
+            otherStack.increment(move);
+            extracted.decrement(move);
+            if (extracted.isEmpty()) {{
+                return true;
+            }}
+        }}
+        if (user.getInventory().insertStack(extracted)) {{
+            return true;
+        }}
+        user.dropItem(extracted, false);
+        return true;
+    }}
+
+    private String managedSlotLabel(int slot) {{
+        if (slot >= 0 && slot < INVENTORY_SLOT_LABELS.length) {{
+            String label = INVENTORY_SLOT_LABELS[slot];
+            if (label != null && !label.isBlank()) {{
+                return label;
+            }}
+        }}
+        return "Slot " + (slot + 1);
+    }}
+
+    private int countHiddenTooltipSlots(ItemStack stack) {{
+        int shown = 0;
+        int hidden = 0;
+        for (int slot = 0; slot < INVENTORY_SLOT_COUNT; slot++) {{
+            boolean empty = getManagedSlotItemId(stack, slot).isBlank() || getManagedSlotCount(stack, slot) <= 0;
+            if (empty && !INVENTORY_TOOLTIP_SHOW_EMPTY) {{
+                continue;
+            }}
+            if (shown < INVENTORY_TOOLTIP_SLOT_LIMIT) {{
+                shown++;
+            }} else {{
+                hidden++;
+            }}
+        }}
+        return hidden;
+    }}
+
+    private boolean handleManagedInventoryUse(World world, PlayerEntity user, Hand hand, ItemStack container) {{
+        Hand otherHand = hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        ItemStack otherStack = user.getStackInHand(otherHand);
+        boolean wantsExtract = INVENTORY_EXTRACT_FROM_USE
+            && hasManagedContents(container)
+            && (!INVENTORY_EXTRACT_REQUIRES_SNEAK || user.isSneaking());
+        boolean prioritizeExtract = INVENTORY_EXTRACT_REQUIRES_SNEAK && user.isSneaking();
+        if (world.isClient()) {{
+            if (prioritizeExtract && wantsExtract) {{
+                return true;
+            }}
+            if (INVENTORY_INSERT_FROM_OFFHAND && !otherStack.isEmpty() && otherStack.getItem() != this) {{
+                return true;
+            }}
+            return wantsExtract;
+        }}
+        if (prioritizeExtract && wantsExtract) {{
+            ItemStack extracted = extractManagedStack(container);
+            if (!extracted.isEmpty()) {{
+                giveManagedExtractedStack(user, hand, extracted);
+                return true;
+            }}
+        }}
+        if (INVENTORY_INSERT_FROM_OFFHAND && !otherStack.isEmpty() && otherStack.getItem() != this) {{
+            int moved = insertManagedStack(container, otherStack);
+            if (otherStack.isEmpty()) {{
+                user.setStackInHand(otherHand, ItemStack.EMPTY);
+            }}
+            if (moved > 0) {{
+                return true;
+            }}
+        }}
+        if (wantsExtract) {{
+            ItemStack extracted = extractManagedStack(container);
+            if (!extracted.isEmpty()) {{
+                giveManagedExtractedStack(user, hand, extracted);
+                return true;
+            }}
+        }}
+        return false;
+    }}
+
+    @Override
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {{
+        super.appendTooltip(stack, world, tooltip, context);
+        if (!INVENTORY_VISIBLE_IN_TOOLTIP) {{
+            return;
+        }}
+        int shown = 0;
+        for (int slot = 0; slot < INVENTORY_SLOT_COUNT; slot++) {{
+            String itemId = getManagedSlotItemId(stack, slot);
+            int count = getManagedSlotCount(stack, slot);
+            boolean empty = itemId.isBlank() || count <= 0;
+            if (empty && !INVENTORY_TOOLTIP_SHOW_EMPTY) {{
+                continue;
+            }}
+            if (shown >= INVENTORY_TOOLTIP_SLOT_LIMIT) {{
+                break;
+            }}
+            String label = managedSlotLabel(slot);
+            if (empty) {{
+                tooltip.add(Text.literal(label + ": Empty"));
+            }} else {{
+                Identifier id = Identifier.tryParse(itemId);
+                Item tooltipItem = id == null ? null : Registries.ITEM.get(id);
+                Text itemName = tooltipItem == null || tooltipItem == Items.AIR ? Text.literal(itemId) : tooltipItem.getName().copy();
+                tooltip.add(Text.literal(label + ": ").append(itemName).append(Text.literal(" x" + count)));
+            }}
+            shown++;
+        }}
+        int hidden = countHiddenTooltipSlots(stack);
+        if (hidden > 0) {{
+            tooltip.add(Text.literal("+" + hidden + " more slots"));
+        }}
+    }}
+"""
+    return {"imports": imports, "members": members}
+
+
 def _write_item_classes(mod: "Mod", java_root: Path, pkg: str, transpiler: JavaTranspiler):
     if not mod._items:
         return
@@ -2074,8 +2485,13 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
     cn = item.get_class_name()
     pkg_item = f"{pkg}.item"
     hooks = item.get_hooks()
+    inventory_spec = _item_inventory_spec(item)
+    managed_inventory = inventory_spec["slots"] > 0
+    inventory_support = _fabric_managed_inventory_support(inventory_spec) if managed_inventory else {"imports": "", "members": ""}
+    bundle_inventory = bool(getattr(item, "bundle_inventory", False)) and not managed_inventory
+    stack_size = 1 if (bundle_inventory or managed_inventory) else item.max_stack_size
 
-    settings_chain = f"new Item.Settings().maxCount({item.max_stack_size})"
+    settings_chain = f"new Item.Settings().maxCount({stack_size})"
     if item.max_damage > 0:
         settings_chain += f".maxDamage({item.max_damage})"
     rarity_java = _RARITY_MAP.get(item.rarity, "Rarity.COMMON")
@@ -2100,18 +2516,28 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
 
     method_blocks = []
 
+    right_click_body = ""
     if "on_right_click" in hooks:
-        body = transpiler.transpile_method(
+        right_click_body = transpiler.transpile_method(
             __import__("inspect").getsource(hooks["on_right_click"]),
             py_func=hooks["on_right_click"],
         )
+    if managed_inventory or right_click_body:
+        use_body = ""
+        if managed_inventory:
+            use_body += """\
+        if (handleManagedInventoryUse(world, user, hand, stack)) {
+            return TypedActionResult.success(stack);
+        }
+"""
+        use_body += right_click_body
         method_blocks.append(f"""\
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {{
         PlayerEntity player = user;
         ItemStack stack = user.getStackInHand(hand);
         BlockPos soundPos = user.getBlockPos();
-{body}
+{use_body}
         return TypedActionResult.success(stack);
     }}""")
 
@@ -2136,11 +2562,14 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
     }}""")
 
     methods_str = "\n\n".join(method_blocks)
+    base_class = "BundleItem" if bundle_inventory else "Item"
+    bundle_import = "import net.minecraft.item.BundleItem;" if bundle_inventory else ""
 
     src = f"""\
 package {pkg_item};
 
 import net.minecraft.entity.Entity;
+{bundle_import}
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -2157,17 +2586,19 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import java.util.Set;
+{inventory_support["imports"]}
 {food_import}
 
 /**
  * {item.get_display_name()} — generated by fabricpy
  */
-public class {cn} extends Item {{
+public class {cn} extends {base_class} {{
 
     public {cn}() {{
         super({settings_chain});
     }}
 
+{inventory_support["members"]}
 {methods_str}
 }}
 """

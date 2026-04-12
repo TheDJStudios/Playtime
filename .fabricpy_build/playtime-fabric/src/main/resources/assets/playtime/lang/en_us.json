@@ -5,14 +5,14 @@
   "block.playtime.critter_plush_catnap": "Critter plush (CatNap)",
   "block.playtime.critter_plush_dogday": "Critter plush (Dogday)",
   "item.playtime.grabpack_cannon": "Grabpack cannon",
-  "item.playtime.grabpack_left_blue": "Grabpack Left (Blue)",
-  "item.playtime.grabpack_right_red": "Grabpack right (red)",
+  "item.playtime.coil": "Coil",
+  "item.playtime.blue_hand": "Blue Hand",
   "itemGroup.playtime.playtime_tab": "Playtime",
   "itemGroup.playtime.playtime_plushies_tab": "Plushies",
   "advancement.playtime.playtime.playtime.title": "Whats the time?",
   "advancement.playtime.playtime.playtime.description": "Join a world with the playtime mod installed",
-  "advancement.playtime.playtime.grabpack.title": "Grabby",
-  "advancement.playtime.playtime.grabpack.description": "Obtain a Grabpack",
+  "advancement.playtime.playtime.grabpack.title": "A step into an unknown world",
+  "advancement.playtime.playtime.grabpack.description": "Obtain a Grabpack cannon.",
   "advancement.playtime.playtime.hand_scanner.title": "Identification",
   "advancement.playtime.playtime.hand_scanner.description": "Obtain or use a Hand Scanner"
 }

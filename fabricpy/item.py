@@ -8,6 +8,22 @@ Class attributes:
     max_damage          int     Durability (0 = unbreakable)            (default: 0)
     rarity              str     "common","uncommon","rare","epic"        (default: "common")
     fireproof           bool    Survives lava/fire                      (default: False)
+    bundle_inventory    bool    Use vanilla bundle-style item storage   (default: False)
+    inventory_slots     int     Managed internal slot count             (default: 0)
+    inventory_slot_capacity int Max items per managed slot             (default: 64)
+    inventory_total_capacity int Optional total managed item cap        (default: 0 = slots * slot capacity)
+    inventory_visible_in_tooltip bool Show managed slots in tooltip     (default: True)
+    inventory_tooltip_show_empty bool Show empty managed slots          (default: False)
+    inventory_tooltip_slot_limit int Max slots shown in tooltip         (default: 8)
+    inventory_insert_from_offhand bool Insert from opposite hand on use (default: True)
+    inventory_extract_from_use bool Extract stored stack on use         (default: True)
+    inventory_extract_requires_sneak bool Sneak required for extract    (default: True)
+    inventory_extract_order str  "first" or "last" extraction order     (default: "last")
+    inventory_whitelist  list    Allowed item ids for all slots         (default: [])
+    inventory_blacklist  list    Blocked item ids for all slots         (default: [])
+    inventory_slot_whitelists dict Per-slot allowed item ids            (default: {})
+    inventory_slot_blacklists dict Per-slot blocked item ids            (default: {})
+    inventory_slot_labels dict  Per-slot tooltip labels                 (default: {})
     food_hunger         int     Hunger restored if food (0 = not food)  (default: 0)
     food_saturation     float   Saturation if food                      (default: 0.0)
     food_always_edible  bool    Edible even when not hungry             (default: False)
@@ -45,6 +61,22 @@ class Item(metaclass=ItemMeta):
 
     # ---- Survival ----
     fireproof: bool = False
+    bundle_inventory: bool = False
+    inventory_slots: int = 0
+    inventory_slot_capacity: int = 64
+    inventory_total_capacity: int = 0
+    inventory_visible_in_tooltip: bool = True
+    inventory_tooltip_show_empty: bool = False
+    inventory_tooltip_slot_limit: int = 8
+    inventory_insert_from_offhand: bool = True
+    inventory_extract_from_use: bool = True
+    inventory_extract_requires_sneak: bool = True
+    inventory_extract_order: str = "last"
+    inventory_whitelist: list = []
+    inventory_blacklist: list = []
+    inventory_slot_whitelists: dict = {}
+    inventory_slot_blacklists: dict = {}
+    inventory_slot_labels: dict = {}
 
     # ---- Food ----
     food_hunger: int = 0
