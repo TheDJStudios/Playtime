@@ -23,6 +23,7 @@ public class Playtime {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ModBlocks.BLOCKS.register(bus);
+        ModBlocks.ITEMS.register(bus);
         ModItems.ITEMS.register(bus);
         
         ModCreativeTabs.TABS.register(bus);
