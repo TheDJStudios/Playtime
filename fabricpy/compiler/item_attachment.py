@@ -2,6 +2,9 @@ import itertools
 import json
 from pathlib import Path
 
+MODEL_MIN = -16.0
+MODEL_MAX = 32.0
+
 
 def _deepcopy_json(value):
     return json.loads(json.dumps(value))
@@ -214,6 +217,44 @@ def _texture_size(model_data: dict) -> list[int] | None:
     return None
 
 
+def _elements_bounds(elements: list[dict]) -> tuple[list[float], list[float]] | None:
+    mins = [float("inf"), float("inf"), float("inf")]
+    maxs = [float("-inf"), float("-inf"), float("-inf")]
+    found = False
+    for element in elements:
+        if not isinstance(element, dict):
+            continue
+        from_pos = element.get("from")
+        to_pos = element.get("to")
+        if not (isinstance(from_pos, list) and isinstance(to_pos, list) and len(from_pos) == 3 and len(to_pos) == 3):
+            continue
+        found = True
+        for axis in range(3):
+            mins[axis] = min(mins[axis], float(from_pos[axis]), float(to_pos[axis]))
+            maxs[axis] = max(maxs[axis], float(from_pos[axis]), float(to_pos[axis]))
+    return (mins, maxs) if found else None
+
+
+def _fit_translation_to_bounds(elements: list[dict], dx: float, dy: float, dz: float) -> tuple[float, float, float] | None:
+    bounds = _elements_bounds(elements)
+    if bounds is None:
+        return dx, dy, dz
+    mins, maxs = bounds
+    shifts = [dx, dy, dz]
+    for axis in range(3):
+        translated_min = mins[axis] + shifts[axis]
+        translated_max = maxs[axis] + shifts[axis]
+        span = translated_max - translated_min
+        if span > (MODEL_MAX - MODEL_MIN):
+            return None
+        if translated_min < MODEL_MIN:
+            shifts[axis] += MODEL_MIN - translated_min
+            translated_max = maxs[axis] + shifts[axis]
+        if translated_max > MODEL_MAX:
+            shifts[axis] += MODEL_MAX - translated_max
+    return shifts[0], shifts[1], shifts[2]
+
+
 def _merge_attachment_model(base_model: dict, attachments: list[dict], hidden_names: set[str]) -> dict:
     result = _remove_named_elements(base_model, hidden_names)
     base_textures = result.get("textures")
@@ -233,6 +274,10 @@ def _merge_attachment_model(base_model: dict, attachments: list[dict], hidden_na
         dx = attachment["host_center"][0] - attachment["child_center"][0]
         dy = attachment["host_center"][1] - attachment["child_center"][1]
         dz = attachment["host_center"][2] - attachment["child_center"][2]
+        fitted = _fit_translation_to_bounds(child_elements, dx, dy, dz)
+        if fitted is None:
+            return None
+        dx, dy, dz = fitted
         for element in child_elements:
             result_elements.append(_translate_element(element, dx, dy, dz))
         child_texture = _texture_size(child_model)
@@ -322,6 +367,8 @@ def build_item_attachment_variants(project_root: Path, mod, item) -> dict | None
             if bundle is not None and item_id
         }
         merged_model = _merge_attachment_model(base_model, attachments, hidden_names)
+        if not isinstance(merged_model, dict):
+            continue
         variants.append({
             "custom_model_data": custom_model_data,
             "model_name": f"{item.item_id}__attached_{custom_model_data}",
