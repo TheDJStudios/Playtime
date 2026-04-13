@@ -10,6 +10,8 @@ import com.generated.playtime.item.GrabPackCannon;
 import com.generated.playtime.item.CoilItem;
 import com.generated.playtime.item.BlueHand;
 import com.generated.playtime.item.RedHand;
+import com.generated.playtime.item.GreenHand;
+import com.generated.playtime.item.FlareHand;
 import com.generated.playtime.item.GrabPack;
 
 /**
@@ -20,6 +22,8 @@ public class ModItems {
     public static final CoilItem COIL = register("coil", new CoilItem());
     public static final BlueHand BLUE_HAND = register("blue_hand", new BlueHand());
     public static final RedHand RED_HAND = register("red_hand", new RedHand());
+    public static final GreenHand GREEN_HAND = register("green_hand", new GreenHand());
+    public static final FlareHand FLARE_HAND = register("flare_hand", new FlareHand());
     public static final GrabPack GRABPACK = register("grabpack", new GrabPack());
 
     private static <T extends Item> T register(String id, T item) {
@@ -32,6 +36,8 @@ public class ModItems {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(COIL));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(BLUE_HAND));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(RED_HAND));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(GREEN_HAND));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(FLARE_HAND));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(GRABPACK));
     }
 }

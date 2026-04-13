@@ -48,6 +48,7 @@ public class ModCreativeTabs {
             .entries((displayContext, entries) -> {
                 entries.add(ModItems.BLUE_HAND);
                 entries.add(ModItems.RED_HAND);
+                entries.add(ModItems.GREEN_HAND);
             })
             .build()
     );

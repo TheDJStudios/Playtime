@@ -45,6 +45,7 @@ public class ModCreativeTabs {
             .displayItems((parameters, output) -> {
                 output.accept(ModItems.BLUE_HAND.get());
                 output.accept(ModItems.RED_HAND.get());
+                output.accept(ModItems.GREEN_HAND.get());
             })
             .build()
     );

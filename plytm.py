@@ -101,6 +101,31 @@ class RedHand(mc.Item):
         "parent": "playtime:item/hands/red_hand"
     }
 
+@mod.register
+class GreenHand(mc.Item):
+    item_id = "green_hand"
+    display_name = "Green Hand"
+    max_stack_size = 1
+    max_damage = 0
+    rarity = "uncommon"
+    attachment_connection_point = "connection_point_hand"
+    model = {
+        "parent": "playtime:item/hands/green_hand"
+    }
+
+
+@mod.register
+class FlareHand(mc.Item):
+    item_id = "flare_hand"
+    display_name = "Flare Hand"
+    max_stack_size = 1
+    max_damage = 0
+    rarity = "uncommon"
+    attachment_connection_point = "connection_point_hand"
+    model = {
+        "parent": "playtime:item/hands/flare_hand"
+    }
+
 
 @mod.register
 class GrabPack(mc.Item):
@@ -122,11 +147,13 @@ class GrabPack(mc.Item):
     }
     inventory_whitelist = [
         "playtime:blue_hand",
-        "playtime:red_hand"
+        "playtime:red_hand",
+        "playtime:green_hand",
+        "playtime:flare_hand"
     ]
     inventory_slot_whitelists = {
         0: ["playtime:blue_hand"],
-        1: ["playtime:red_hand"]
+        1: ["playtime:red_hand", "playtime:green_hand","playtime:flare_hand"]
     }
     inventory_attachment_points = {
         0: "cannon_connector_l",
@@ -134,7 +161,7 @@ class GrabPack(mc.Item):
     }
     inventory_attachment_items = {
         0: ["playtime:blue_hand"],
-        1: ["playtime:red_hand"]
+        1: ["playtime:red_hand", "playtime:green_hand","playtime:flare_hand"]
     }
 
 @mod.register
@@ -319,6 +346,7 @@ hands_tab = mod.creative_tab(
 )
 hands_tab.item.add("playtime:blue_hand")
 hands_tab.item.add("playtime:red_hand")
+hands_tab.item.add("playtime:green_hand")
 
 
 
@@ -380,6 +408,26 @@ mod.item_advancement(
     frame="task",
     parent="playtime:playtime/blue_hand",
     trigger_item="playtime:red_hand"
+)
+mod.item_advancement(
+    advancement_id="playtime/green_hand",
+    title="Timed power",
+    description="Obtain a Green hand",
+    icon_item="playtime:green_hand",
+    background="minecraft:textures/gui/advancements/backgrounds/stone.png",
+    frame="task",
+    parent="playtime:playtime/blue_hand",
+    trigger_item="playtime:green_hand"
+)
+mod.item_advancement(
+    advancement_id="playtime/flare_hand",
+    title="Why did they even make this?",
+    description="Obtain a Flare hand",
+    icon_item="playtime:flare_hand",
+    background="minecraft:textures/gui/advancements/backgrounds/stone.png",
+    frame="task",
+    parent="playtime:playtime/blue_hand",
+    trigger_item="playtime:flare_hand"
 )
 @mod.event("player_join")
 def on_join(ctx):

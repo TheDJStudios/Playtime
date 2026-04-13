@@ -18,6 +18,30 @@
         "custom_model_data": 3
       },
       "model": "playtime:item/grabpack__attached_3"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4
+      },
+      "model": "playtime:item/grabpack__attached_4"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 5
+      },
+      "model": "playtime:item/grabpack__attached_5"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 6
+      },
+      "model": "playtime:item/grabpack__attached_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 7
+      },
+      "model": "playtime:item/grabpack__attached_7"
     }
   ]
 }

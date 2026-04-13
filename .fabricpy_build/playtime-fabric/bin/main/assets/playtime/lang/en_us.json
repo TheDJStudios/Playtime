@@ -8,6 +8,8 @@
   "item.playtime.coil": "Coil",
   "item.playtime.blue_hand": "Blue Hand",
   "item.playtime.red_hand": "Red Hand",
+  "item.playtime.green_hand": "Green Hand",
+  "item.playtime.flare_hand": "Flare Hand",
   "item.playtime.grabpack": "Grabpack",
   "itemGroup.playtime.playtime_tab": "Playtime",
   "itemGroup.playtime.playtime_plushies_tab": "Plushies",
@@ -23,5 +25,9 @@
   "advancement.playtime.playtime.blue_hand.title": "Basic use",
   "advancement.playtime.playtime.blue_hand.description": "Obtain a Blue hand",
   "advancement.playtime.playtime.red_hand.title": "More authority",
-  "advancement.playtime.playtime.red_hand.description": "Obtain a Red hand"
+  "advancement.playtime.playtime.red_hand.description": "Obtain a Red hand",
+  "advancement.playtime.playtime.green_hand.title": "Timed power",
+  "advancement.playtime.playtime.green_hand.description": "Obtain a Green hand",
+  "advancement.playtime.playtime.flare_hand.title": "Why did they even make this?",
+  "advancement.playtime.playtime.flare_hand.description": "Obtain a Flare hand"
 }

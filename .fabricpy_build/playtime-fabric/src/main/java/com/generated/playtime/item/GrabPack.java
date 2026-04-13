@@ -47,10 +47,10 @@ public class GrabPack extends Item {
     private static final boolean INVENTORY_EXTRACT_FROM_USE = true;
     private static final boolean INVENTORY_EXTRACT_REQUIRES_SNEAK = true;
     private static final String INVENTORY_EXTRACT_ORDER = "last";
-    private static final String[] INVENTORY_WHITELIST = new String[] {"playtime:blue_hand", "playtime:red_hand"};
+    private static final String[] INVENTORY_WHITELIST = new String[] {"playtime:blue_hand", "playtime:red_hand", "playtime:green_hand", "playtime:flare_hand"};
     private static final String[] INVENTORY_BLACKLIST = new String[] {};
     private static final String[] INVENTORY_SLOT_LABELS = new String[] {"Left hand", "Right hand"};
-    private static final String[][] INVENTORY_SLOT_WHITELISTS = new String[][] {new String[] {"playtime:blue_hand"}, new String[] {"playtime:red_hand"}};
+    private static final String[][] INVENTORY_SLOT_WHITELISTS = new String[][] {new String[] {"playtime:blue_hand"}, new String[] {"playtime:red_hand", "playtime:green_hand", "playtime:flare_hand"}};
     private static final String[][] INVENTORY_SLOT_BLACKLISTS = new String[][] {new String[] {}, new String[] {}};
 
     private NbtList getManagedInventoryList(ItemStack container) {
@@ -357,11 +357,23 @@ public class GrabPack extends Item {
         if (getManagedSlotCount(container, 0) <= 0 && getManagedSlotCount(container, 1) > 0 && "playtime:red_hand".equals(getManagedSlotItemId(container, 1))) {
             return 1;
         }
-        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) <= 0) {
+        if (getManagedSlotCount(container, 0) <= 0 && getManagedSlotCount(container, 1) > 0 && "playtime:green_hand".equals(getManagedSlotItemId(container, 1))) {
             return 2;
         }
-        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) > 0 && "playtime:red_hand".equals(getManagedSlotItemId(container, 1))) {
+        if (getManagedSlotCount(container, 0) <= 0 && getManagedSlotCount(container, 1) > 0 && "playtime:flare_hand".equals(getManagedSlotItemId(container, 1))) {
             return 3;
+        }
+        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) <= 0) {
+            return 4;
+        }
+        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) > 0 && "playtime:red_hand".equals(getManagedSlotItemId(container, 1))) {
+            return 5;
+        }
+        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) > 0 && "playtime:green_hand".equals(getManagedSlotItemId(container, 1))) {
+            return 6;
+        }
+        if (getManagedSlotCount(container, 0) > 0 && "playtime:blue_hand".equals(getManagedSlotItemId(container, 0)) && getManagedSlotCount(container, 1) > 0 && "playtime:flare_hand".equals(getManagedSlotItemId(container, 1))) {
+            return 7;
         }
         return 0;
     }
