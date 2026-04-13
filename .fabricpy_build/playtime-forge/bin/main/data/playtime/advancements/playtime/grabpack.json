@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "playtime:grabpack_cannon"
+      "item": "playtime:grabpack"
     },
     "title": {
       "translate": "advancement.playtime.playtime.grabpack.title"
@@ -22,12 +22,12 @@
         "items": [
           {
             "items": [
-              "playtime:grabpack_cannon"
+              "playtime:grabpack"
             ]
           }
         ]
       }
     }
   },
-  "parent": "playtime:playtime/playtime"
+  "parent": "playtime:playtime/grabpack_cannon"
 }
