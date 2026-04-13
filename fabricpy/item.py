@@ -24,6 +24,9 @@ Class attributes:
     inventory_slot_whitelists dict Per-slot allowed item ids            (default: {})
     inventory_slot_blacklists dict Per-slot blocked item ids            (default: {})
     inventory_slot_labels dict  Per-slot tooltip labels                 (default: {})
+    attachment_connection_point str Named cube on this item model used for attachments (default: "")
+    inventory_attachment_points dict Per-slot host cube names for attached models (default: {})
+    inventory_attachment_items dict Per-slot attachable item ids        (default: {})
     food_hunger         int     Hunger restored if food (0 = not food)  (default: 0)
     food_saturation     float   Saturation if food                      (default: 0.0)
     food_always_edible  bool    Edible even when not hungry             (default: False)
@@ -77,6 +80,9 @@ class Item(metaclass=ItemMeta):
     inventory_slot_whitelists: dict = {}
     inventory_slot_blacklists: dict = {}
     inventory_slot_labels: dict = {}
+    attachment_connection_point: str = ""
+    inventory_attachment_points: dict = {}
+    inventory_attachment_items: dict = {}
 
     # ---- Food ----
     food_hunger: int = 0

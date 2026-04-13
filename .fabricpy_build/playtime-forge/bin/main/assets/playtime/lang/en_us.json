@@ -7,6 +7,9 @@
   "item.playtime.grabpack_cannon": "Grabpack cannon",
   "item.playtime.coil": "Coil",
   "item.playtime.blue_hand": "Blue Hand",
+  "item.playtime.red_hand": "Red Hand",
+  "item.playtime.grabpack": "Grabpack",
   "itemGroup.playtime.playtime_tab": "Playtime",
-  "itemGroup.playtime.playtime_plushies_tab": "Plushies"
+  "itemGroup.playtime.playtime_plushies_tab": "Plushies",
+  "itemGroup.playtime.playtime_hands_tab": "Hands"
 }

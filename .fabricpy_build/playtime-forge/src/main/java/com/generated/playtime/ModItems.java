@@ -9,6 +9,8 @@ import net.minecraftforge.registries.RegistryObject;
 import com.generated.playtime.item.GrabPackCannon;
 import com.generated.playtime.item.CoilItem;
 import com.generated.playtime.item.BlueHand;
+import com.generated.playtime.item.RedHand;
+import com.generated.playtime.item.GrabPack;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -17,12 +19,16 @@ public class ModItems {
     public static final RegistryObject<Item> GRABPACK_CANNON = ITEMS.register("grabpack_cannon", GrabPackCannon::new);
     public static final RegistryObject<Item> COIL = ITEMS.register("coil", CoilItem::new);
     public static final RegistryObject<Item> BLUE_HAND = ITEMS.register("blue_hand", BlueHand::new);
+    public static final RegistryObject<Item> RED_HAND = ITEMS.register("red_hand", RedHand::new);
+    public static final RegistryObject<Item> GRABPACK = ITEMS.register("grabpack", GrabPack::new);
 
     public static void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(GRABPACK_CANNON);
             event.accept(COIL);
             event.accept(BLUE_HAND);
+            event.accept(RED_HAND);
+            event.accept(GRABPACK);
         }
     }
 }

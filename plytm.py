@@ -64,7 +64,7 @@ class GrabPackCannon(mc.Item):
     max_damage = 0
     rarity = "epic"
     model = {
-        "parent": "playtime:item/tool/grabpack"
+        "parent": "playtime:item/tool/grabpack_cannon"
     }
 
 @mod.register
@@ -84,11 +84,58 @@ class BlueHand(mc.Item):
     max_stack_size = 1
     max_damage = 0
     rarity = "uncommon"
+    attachment_connection_point = "connection_point_hand"
     model = {
         "parent": "playtime:item/hands/blue_hand"
     }
 
+@mod.register
+class RedHand(mc.Item):
+    item_id = "red_hand"
+    display_name = "Red Hand"
+    max_stack_size = 1
+    max_damage = 0
+    rarity = "uncommon"
+    attachment_connection_point = "connection_point_hand"
+    model = {
+        "parent": "playtime:item/hands/red_hand"
+    }
 
+
+@mod.register
+class GrabPack(mc.Item):
+    item_id = "grabpack"
+    display_name = "Grabpack"
+    max_stack_size = 1
+    max_damage = 0
+    rarity = "rare"
+    model = {
+        "parent": "playtime:item/tool/grabpack"
+    }
+    inventory_slots = 2
+    inventory_slot_capacity = 1
+    inventory_total_capacity = 2
+    inventory_tooltip_show_empty = True
+    inventory_slot_labels = {
+        0: "Left hand",
+        1: "Right hand"
+    }
+    inventory_whitelist = [
+        "playtime:blue_hand",
+        "playtime:red_hand"
+    ]
+    inventory_slot_whitelists = {
+        0: ["playtime:blue_hand"],
+        1: ["playtime:red_hand"]
+    }
+    inventory_attachment_points = {
+        0: "cannon_connector_l",
+        1: "cannon_connector_r"
+    }
+    inventory_attachment_items = {
+        0: ["playtime:blue_hand"],
+        1: ["playtime:red_hand"]
+    }
 
 @mod.register
 class HoppyPlush(mc.Block):
@@ -244,13 +291,17 @@ mod.shaped_recipe(
 playtime_tab = mod.creative_tab(
     tab_id="playtime_tab",
     title="Playtime",
-    icon_item="playtime:grabpack_cannon"
+    icon_item="playtime:grabpack"
 )
-playtime_tab.item.add("playtime:hand_scanner")
-playtime_tab.item.add("playtime:hand_scanner_red_right")
+
+playtime_tab.item.add("playtime:grabpack")
+playtime_tab.item.add("playtime:blue_hand")
+playtime_tab.item.add("playtime:red_hand")
 playtime_tab.item.add("playtime:grabpack_cannon")
 playtime_tab.item.add("playtime:coil")
-playtime_tab.item.add("playtime:blue_hand")
+playtime_tab.item.add("playtime:hand_scanner_red_right")
+playtime_tab.item.add("playtime:hand_scanner")
+
 
 plushie_tab = mod.creative_tab(
     tab_id="playtime_plushies_tab",
@@ -261,6 +312,16 @@ plushie_tab.item.add("playtime:critter_plush_hoppy")
 plushie_tab.item.add("playtime:critter_plush_catnap")
 plushie_tab.item.add("playtime:critter_plush_dogday")
 
+hands_tab = mod.creative_tab(
+    tab_id="playtime_hands_tab",
+    title="Hands",
+    icon_item="playtime:blue_hand"
+)
+hands_tab.item.add("playtime:blue_hand")
+hands_tab.item.add("playtime:red_hand")
+
+
+
 mod.add_advancement(
     advancement_id="playtime/playtime",
     title="Whats the time?",
@@ -270,7 +331,7 @@ mod.add_advancement(
     frame="task"
 )
 mod.item_advancement(
-    advancement_id="playtime/grabpack",
+    advancement_id="playtime/grabpack_cannon",
     title="A step into an unknown world",
     description="Obtain a Grabpack cannon.",
     icon_item="playtime:grabpack_cannon",
@@ -290,6 +351,36 @@ mod.item_advancement(
     trigger_item="playtime:hand_scanner"
 )
 
+mod.item_advancement(
+    advancement_id="playtime/grabpack",
+    title="I remember this...",
+    description="Obtain a Grabpack",
+    icon_item="playtime:grabpack",
+    background="minecraft:textures/gui/advancements/backgrounds/stone.png",
+    frame="task",
+    parent="playtime:playtime/grabpack_cannon",
+    trigger_item="playtime:grabpack"
+)
+mod.item_advancement(
+    advancement_id="playtime/blue_hand",
+    title="Basic use",
+    description="Obtain a Blue hand",
+    icon_item="playtime:blue_hand",
+    background="minecraft:textures/gui/advancements/backgrounds/stone.png",
+    frame="task",
+    parent="playtime:playtime/grabpack",
+    trigger_item="playtime:blue_hand"
+)
+mod.item_advancement(
+    advancement_id="playtime/red_hand",
+    title="More authority",
+    description="Obtain a Red hand",
+    icon_item="playtime:red_hand",
+    background="minecraft:textures/gui/advancements/backgrounds/stone.png",
+    frame="task",
+    parent="playtime:playtime/blue_hand",
+    trigger_item="playtime:red_hand"
+)
 @mod.event("player_join")
 def on_join(ctx):
     if not ctx.player.has_advancement("playtime:playtime/playtime"):

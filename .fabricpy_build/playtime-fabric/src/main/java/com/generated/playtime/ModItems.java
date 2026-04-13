@@ -9,6 +9,8 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import com.generated.playtime.item.GrabPackCannon;
 import com.generated.playtime.item.CoilItem;
 import com.generated.playtime.item.BlueHand;
+import com.generated.playtime.item.RedHand;
+import com.generated.playtime.item.GrabPack;
 
 /**
  * Registers all items for Playtime.
@@ -17,6 +19,8 @@ public class ModItems {
     public static final GrabPackCannon GRABPACK_CANNON = register("grabpack_cannon", new GrabPackCannon());
     public static final CoilItem COIL = register("coil", new CoilItem());
     public static final BlueHand BLUE_HAND = register("blue_hand", new BlueHand());
+    public static final RedHand RED_HAND = register("red_hand", new RedHand());
+    public static final GrabPack GRABPACK = register("grabpack", new GrabPack());
 
     private static <T extends Item> T register(String id, T item) {
         return Registry.register(Registries.ITEM, new Identifier(Playtime.MOD_ID, id), item);
@@ -27,5 +31,7 @@ public class ModItems {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(GRABPACK_CANNON));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(COIL));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(BLUE_HAND));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(RED_HAND));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(entries -> entries.add(GRABPACK));
     }
 }

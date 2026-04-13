@@ -1,0 +1,23 @@
+{
+  "parent": "playtime:item/grabpack__base",
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 1
+      },
+      "model": "playtime:item/grabpack__attached_1"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 2
+      },
+      "model": "playtime:item/grabpack__attached_2"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 3
+      },
+      "model": "playtime:item/grabpack__attached_3"
+    }
+  ]
+}

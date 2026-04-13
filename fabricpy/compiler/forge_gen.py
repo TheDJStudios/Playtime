@@ -32,6 +32,7 @@ from fabricpy.compiler.transpiler import JavaTranspiler
 from fabricpy.compiler.symbol_index import write_interop_metadata
 from fabricpy.compiler.jar_scanner import build_symbol_index_for_project
 from fabricpy.compiler.bbmodel_converter import compile_bbmodels_in_assets
+from fabricpy.compiler.item_attachment import build_item_attachment_variants
 from fabricpy.compiler.api_maps import (
     FORGE_API_MAP, FORGE_EXTRA_IMPORTS,
     FORGE_EVENT_MAP,
@@ -2114,7 +2115,47 @@ def _java_string_matrix(rows: list[list[str]]) -> str:
     return "new String[][] {" + ", ".join(_java_string_array(row) for row in rows) + "}"
 
 
-def _forge_managed_inventory_support(spec: dict) -> dict:
+def _managed_attachment_condition_java(slot_state: dict, attachment_slots: list[int]) -> str:
+    parts: list[str] = []
+    for slot in attachment_slots:
+        item_id = slot_state.get(slot) or slot_state.get(str(slot)) or ""
+        if item_id:
+            parts.append(f'getManagedSlotCount(container, {slot}) > 0')
+            parts.append(f'{_java_string_literal(item_id)}.equals(getManagedSlotItemId(container, {slot}))')
+        else:
+            parts.append(f'getManagedSlotCount(container, {slot}) <= 0')
+    return " && ".join(parts) if parts else "false"
+
+
+def _forge_managed_inventory_support(spec: dict, attachment_config: dict | None = None) -> dict:
+    attachment_variants = attachment_config.get("variants", []) if isinstance(attachment_config, dict) else []
+    attachment_slots = attachment_config.get("attachment_slots", []) if isinstance(attachment_config, dict) else []
+    attachment_methods = ""
+    attachment_sync_call = ""
+    if attachment_variants:
+        attachment_sync_call = "\n        syncManagedAttachmentModel(container);"
+        variant_checks = "\n".join(
+            f"""        if ({_managed_attachment_condition_java(variant["slot_state"], attachment_slots)}) {{
+            return {variant["custom_model_data"]};
+        }}"""
+            for variant in attachment_variants
+        )
+        attachment_methods = f"""
+
+    private int resolveManagedAttachmentModelData(ItemStack container) {{
+{variant_checks}
+        return 0;
+    }}
+
+    private void syncManagedAttachmentModel(ItemStack container) {{
+        CompoundTag tag = container.getOrCreateTag();
+        int customModelData = resolveManagedAttachmentModelData(container);
+        if (customModelData > 0) {{
+            tag.putInt("CustomModelData", customModelData);
+        }} else {{
+            tag.remove("CustomModelData");
+        }}
+    }}"""
     imports = "\n".join([
         "import java.util.List;",
         "import net.minecraft.nbt.CompoundTag;",
@@ -2175,6 +2216,7 @@ def _forge_managed_inventory_support(spec: dict) -> dict:
         }}
         list.set(slot, entry);
         container.getOrCreateTag().put(INVENTORY_KEY, list);
+{attachment_sync_call}
     }}
 
     private String getManagedSlotItemId(ItemStack container, int slot) {{
@@ -2364,15 +2406,16 @@ def _forge_managed_inventory_support(spec: dict) -> dict:
     private boolean handleManagedInventoryUse(Level level, Player user, InteractionHand hand, ItemStack container) {{
         InteractionHand otherHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
         ItemStack otherStack = user.getItemInHand(otherHand);
+        boolean hasInsertCandidate = INVENTORY_INSERT_FROM_OFFHAND && !otherStack.isEmpty() && otherStack.getItem() != this;
         boolean wantsExtract = INVENTORY_EXTRACT_FROM_USE
             && hasManagedContents(container)
             && (!INVENTORY_EXTRACT_REQUIRES_SNEAK || user.isCrouching());
-        boolean prioritizeExtract = INVENTORY_EXTRACT_REQUIRES_SNEAK && user.isCrouching();
+        boolean prioritizeExtract = INVENTORY_EXTRACT_REQUIRES_SNEAK && user.isCrouching() && !hasInsertCandidate;
         if (level.isClientSide()) {{
             if (prioritizeExtract && wantsExtract) {{
                 return true;
             }}
-            if (INVENTORY_INSERT_FROM_OFFHAND && !otherStack.isEmpty() && otherStack.getItem() != this) {{
+            if (hasInsertCandidate) {{
                 return true;
             }}
             return wantsExtract;
@@ -2384,7 +2427,7 @@ def _forge_managed_inventory_support(spec: dict) -> dict:
                 return true;
             }}
         }}
-        if (INVENTORY_INSERT_FROM_OFFHAND && !otherStack.isEmpty() && otherStack.getItem() != this) {{
+        if (hasInsertCandidate) {{
             int moved = insertManagedStack(container, otherStack);
             if (otherStack.isEmpty()) {{
                 user.setItemInHand(otherHand, ItemStack.EMPTY);
@@ -2435,7 +2478,7 @@ def _forge_managed_inventory_support(spec: dict) -> dict:
         if (hidden > 0) {{
             tooltip.add(Component.literal("+" + hidden + " more slots"));
         }}
-    }}
+    }}{attachment_methods}
 """
     return {"imports": imports, "members": members}
 
@@ -2454,7 +2497,9 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
     hooks = item.get_hooks()
     inventory_spec = _item_inventory_spec(item)
     managed_inventory = inventory_spec["slots"] > 0
-    inventory_support = _forge_managed_inventory_support(inventory_spec) if managed_inventory else {"imports": "", "members": ""}
+    attachment_config = build_item_attachment_variants(Path.cwd(), mod, item) if managed_inventory else None
+    attachment_sync = bool(attachment_config and attachment_config.get("variants"))
+    inventory_support = _forge_managed_inventory_support(inventory_spec, attachment_config) if managed_inventory else {"imports": "", "members": ""}
     bundle_inventory = bool(getattr(item, "bundle_inventory", False)) and not managed_inventory
     stack_size = 1 if (bundle_inventory or managed_inventory) else item.max_stack_size
 
@@ -2490,11 +2535,14 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
         return InteractionResultHolder.success(stack);
     }}""")
 
-    if "on_hold" in hooks:
-        body = transpiler.transpile_method(
-            __import__("inspect").getsource(hooks["on_hold"]),
-            py_func=hooks["on_hold"],
-        )
+    if "on_hold" in hooks or attachment_sync:
+        body = ""
+        if "on_hold" in hooks:
+            body = transpiler.transpile_method(
+                __import__("inspect").getsource(hooks["on_hold"]),
+                py_func=hooks["on_hold"],
+            )
+        sync_body = "        syncManagedAttachmentModel(stack);\n" if attachment_sync else ""
         method_blocks.append(f"""\
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {{
@@ -2507,7 +2555,7 @@ def _write_single_item(mod, item, item_dir: Path, pkg: str, transpiler: JavaTran
             return;
         }}
         BlockPos soundPos = player.blockPosition();
-{body}
+{sync_body}{body}
     }}""")
 
     methods_str = "\n\n".join(method_blocks)
@@ -3009,13 +3057,36 @@ description="{mod.description}"
         )
 
     for item in mod._items:
-        item_model = item.model or {
+        attachment_variants = build_item_attachment_variants(Path.cwd(), mod, item)
+        if attachment_variants:
+            _write_text(
+                item_models_dir / f"{attachment_variants['base_model_name']}.json",
+                json.dumps(attachment_variants["base_model"], indent=2),
+            )
+            for variant in attachment_variants["variants"]:
+                _write_text(
+                    item_models_dir / f"{variant['model_name']}.json",
+                    json.dumps(variant["model"], indent=2),
+                )
+            item_model = {
+                "parent": f"{mod.mod_id}:item/{attachment_variants['base_model_name']}",
+            }
+            if attachment_variants["variants"]:
+                item_model["overrides"] = [
+                    {
+                        "predicate": {"custom_model_data": variant["custom_model_data"]},
+                        "model": f"{mod.mod_id}:item/{variant['model_name']}",
+                    }
+                    for variant in attachment_variants["variants"]
+                ]
+        else:
+            item_model = item.model or {
             "parent": "minecraft:item/generated",
             "textures": item.textures or {
                 "layer0": _resource_ref(mod.mod_id, item.texture, "item", item.item_id)
             }
-        }
-        if getattr(item, "emissive_texture", "") and isinstance(item_model, dict):
+            }
+        if not attachment_variants and getattr(item, "emissive_texture", "") and isinstance(item_model, dict):
             item_model = json.loads(json.dumps(item_model))
             textures = dict(item_model.get("textures", {}))
             textures.setdefault(
