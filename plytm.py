@@ -57,6 +57,31 @@ class HandScannerRedRight(mc.Block):
     collidable = True
 
 @mod.register
+class HandScannerVTwoBlue(mc.Block):
+    block_id = "hand_scanner_vtwo_blue"
+    display_name = "Hand Scanner V2 (Blue)"
+    emissive_texture = "playtime/scanner_v2_blue"
+    emissive_level = 191
+    variable_rotation = True
+    rotation_mode = "wall"
+    item_model = {
+        "parent": "playtime:block/scanner_v2"
+    }
+    hardness = 4.0
+    resistance = 4.0
+    luminance = 3
+    slipperiness = 0.6
+    material = "stone"
+    sound_group = "stone"
+    requires_tool = True
+    drops_self = True
+    has_block_entity = False
+    opaque = False
+    collidable = True
+
+
+
+@mod.register
 class GrabPackCannon(mc.Item):
     item_id = "grabpack_cannon"
     display_name = "Grabpack cannon"
