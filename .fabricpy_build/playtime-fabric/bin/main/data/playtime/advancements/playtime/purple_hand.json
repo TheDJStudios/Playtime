@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "playtime:purple_hand"
+    },
+    "title": {
+      "translate": "advancement.playtime.playtime.purple_hand.title"
+    },
+    "description": {
+      "translate": "advancement.playtime.playtime.purple_hand.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "has_item": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "playtime:purple_hand"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "parent": "playtime:playtime/blue_hand"
+}

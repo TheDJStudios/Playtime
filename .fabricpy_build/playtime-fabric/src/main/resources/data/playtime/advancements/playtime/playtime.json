@@ -13,7 +13,7 @@
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false,
-    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+    "background": "playtime:textures/block/deco/floor_tile_b.png"
   },
   "criteria": {
     "fabricpy_manual": {

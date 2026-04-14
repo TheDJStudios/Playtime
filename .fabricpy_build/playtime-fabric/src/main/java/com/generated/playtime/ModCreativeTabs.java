@@ -49,6 +49,8 @@ public class ModCreativeTabs {
                 entries.add(ModItems.BLUE_HAND);
                 entries.add(ModItems.RED_HAND);
                 entries.add(ModItems.GREEN_HAND);
+                entries.add(ModItems.FLARE_HAND);
+                entries.add(ModItems.PURPLE_HAND);
             })
             .build()
     );

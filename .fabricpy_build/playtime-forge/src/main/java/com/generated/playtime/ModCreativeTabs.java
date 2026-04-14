@@ -46,6 +46,8 @@ public class ModCreativeTabs {
                 output.accept(ModItems.BLUE_HAND.get());
                 output.accept(ModItems.RED_HAND.get());
                 output.accept(ModItems.GREEN_HAND.get());
+                output.accept(ModItems.FLARE_HAND.get());
+                output.accept(ModItems.PURPLE_HAND.get());
             })
             .build()
     );

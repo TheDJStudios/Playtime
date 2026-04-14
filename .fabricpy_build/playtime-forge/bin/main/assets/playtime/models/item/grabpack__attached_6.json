@@ -9,7 +9,7 @@
     "3": "playtime:item/tool/grabpack",
     "att0_0": "playtime:item/hands/blue_hand",
     "att0_particle": "playtime:item/hands/blue_hand",
-    "att1_0": "playtime:item/hands/green_hand"
+    "att1_0": "playtime:item/hands/red_hand"
   },
   "elements": [
     {
