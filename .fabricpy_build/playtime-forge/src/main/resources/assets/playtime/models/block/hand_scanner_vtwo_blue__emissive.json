@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "playtime:block/playtime/scanner_v2_blue"
+  },
+  "ambientocclusion": false
+}

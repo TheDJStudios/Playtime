@@ -45,6 +45,80 @@ def _gradle_version(gradle_bin: str, env: dict[str, str]) -> tuple[int, ...] | N
         return None
     return _parse_version_tuple(match.group(1))
 
+
+def _wrapper_script_name() -> str:
+    return "gradlew.bat" if sys.platform == "win32" else "gradlew"
+
+
+def _manual_gradle_wrapper_command(project_dir: Path, gradle_version: str) -> str:
+    project = str(project_dir)
+    if sys.platform == "win32":
+        return f'cd /d "{project}" && gradle wrapper --gradle-version {gradle_version} && gradlew.bat build'
+    return f'cd "{project}" && gradle wrapper --gradle-version {gradle_version} && ./gradlew build'
+
+
+def _gradle_command(project_dir: Path, *args: str) -> list[str]:
+    wrapper_path = str(project_dir / _wrapper_script_name())
+    if sys.platform == "win32":
+        return ["cmd.exe", "/d", "/c", wrapper_path, *args]
+    return [wrapper_path, *args]
+
+
+def _ensure_wrapper_executable(project_dir: Path) -> None:
+    if sys.platform == "win32":
+        return
+    wrapper_path = project_dir / "gradlew"
+    if not wrapper_path.exists():
+        return
+    current_mode = wrapper_path.stat().st_mode
+    wrapper_path.chmod(current_mode | 0o111)
+
+
+def _wrapper_script_needs_refresh(project_dir: Path, gradle_version: str) -> bool:
+    wrapper_script = project_dir / _wrapper_script_name()
+    wrapper_props = project_dir / "gradle" / "wrapper" / "gradle-wrapper.properties"
+    if not wrapper_script.exists() or not wrapper_props.exists():
+        return True
+
+    props_text = wrapper_props.read_text(encoding="utf-8", errors="ignore")
+    if f"gradle-{gradle_version}-bin.zip" not in props_text:
+        return True
+
+    script_text = wrapper_script.read_text(encoding="utf-8", errors="ignore")
+    if sys.platform != "win32" and "readlink -f" in script_text:
+        return True
+    return False
+
+
+def _wrapper_jar_path(project_dir: Path) -> Path:
+    return project_dir / "gradle" / "wrapper" / "gradle-wrapper.jar"
+
+
+def _wrapper_ready(project_dir: Path, gradle_version: str) -> bool:
+    wrapper_script = project_dir / _wrapper_script_name()
+    wrapper_props = project_dir / "gradle" / "wrapper" / "gradle-wrapper.properties"
+    wrapper_jar = _wrapper_jar_path(project_dir)
+    if not wrapper_script.exists() or not wrapper_props.exists() or not wrapper_jar.exists():
+        return False
+    props_text = wrapper_props.read_text(encoding="utf-8", errors="ignore")
+    return f"gradle-{gradle_version}-bin.zip" in props_text
+
+
+def _find_wrapper_jar_candidates(project_dir: Path) -> list[Path]:
+    candidates: list[Path] = []
+    seen: set[str] = set()
+    search_roots = [project_dir.parent, Path.home()]
+    for root in search_roots:
+        if not root.exists():
+            continue
+        for candidate in root.rglob("gradle-wrapper.jar"):
+            resolved = str(candidate.resolve())
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            candidates.append(candidate)
+    return candidates
+
 def _required_java_major(minecraft_version: str) -> int:
     version_map = {
         "1.20.1": 17,
@@ -208,18 +282,20 @@ def _setup_gradle_wrapper(project_dir: Path, env: dict[str, str], gradle_version
     1. If `gradle` is on PATH, run `gradle wrapper --gradle-version <required>`
     2. Otherwise, try to copy wrapper from another project.
     """
-    wrapper_script = project_dir / ("gradlew.bat" if sys.platform == "win32" else "gradlew")
+    wrapper_script = project_dir / _wrapper_script_name()
     wrapper_props = project_dir / "gradle" / "wrapper" / "gradle-wrapper.properties"
 
     if wrapper_script.exists() and wrapper_props.exists():
-        props_text = wrapper_props.read_text(encoding="utf-8", errors="ignore")
-        if f"gradle-{gradle_version}-bin.zip" in props_text:
+        if _wrapper_script_needs_refresh(project_dir, gradle_version):
+            print(f"[fabricpy] Refreshing Gradle wrapper scripts for {gradle_version}...")
+            _write_wrapper_scripts(project_dir, gradle_version)
+        _ensure_wrapper_executable(project_dir)
+        if _wrapper_ready(project_dir, gradle_version):
             print("[fabricpy] Gradle wrapper already present.")
             return True
-        print(f"[fabricpy] Updating Gradle wrapper to {gradle_version}...")
+        print(f"[fabricpy] Updating/incompletely repairing Gradle wrapper to {gradle_version}...")
     elif wrapper_script.exists():
-        print("[fabricpy] Gradle wrapper already present.")
-        return True
+        print("[fabricpy] Wrapper scripts exist but wrapper metadata is incomplete; rebuilding them.")
 
     gradle_bin = shutil.which("gradle", path=env.get("PATH"))
     if gradle_bin:
@@ -246,10 +322,10 @@ def _setup_gradle_wrapper(project_dir: Path, env: dict[str, str], gradle_version
     print("[fabricpy] Generating minimal Gradle wrapper scripts...")
     _write_wrapper_scripts(project_dir, gradle_version)
 
-    jar_path = project_dir / "gradle" / "wrapper" / "gradle-wrapper.jar"
+    jar_path = _wrapper_jar_path(project_dir)
     jar_path.parent.mkdir(parents=True, exist_ok=True)
 
-    jar_candidates = list(Path.home().rglob("gradle-wrapper.jar"))
+    jar_candidates = _find_wrapper_jar_candidates(project_dir)
     if jar_candidates:
         shutil.copy2(jar_candidates[0], jar_path)
         print(f"[fabricpy] Copied gradle-wrapper.jar from {jar_candidates[0]}")
@@ -257,7 +333,7 @@ def _setup_gradle_wrapper(project_dir: Path, env: dict[str, str], gradle_version
 
     print("[fabricpy] Could not find gradle-wrapper.jar.")
     print("[fabricpy] Please install Gradle (https://gradle.org/install/) and run:")
-    print(f"    cd {project_dir} && gradle wrapper --gradle-version {gradle_version}")
+    print(f"    {_manual_gradle_wrapper_command(project_dir, gradle_version)}")
     return False
 
 
@@ -281,15 +357,16 @@ def _write_wrapper_scripts(project_dir: Path, gradle_version: str):
 # Gradle start up script for UN*X
 # Generated by fabricpy
 ##############################################################################
-APP_HOME=$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 if [ -n "$JAVA_HOME" ]; then
   exec "$JAVA_HOME/bin/java" -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
 fi
 exec java -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
 """
     gradlew_path = project_dir / "gradlew"
-    gradlew_path.write_text(gradlew)
-    gradlew_path.chmod(0o755)
+    gradlew_path.write_text(gradlew, encoding="utf-8")
+    if sys.platform != "win32":
+        gradlew_path.chmod(0o755)
 
     (project_dir / "gradlew.bat").write_text(
         "@rem Generated by fabricpy\r\n"
@@ -298,7 +375,8 @@ exec java -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" "$@"
         "  \"%JAVA_HOME%\\bin\\java.exe\" -jar \"%~dp0gradle\\wrapper\\gradle-wrapper.jar\" %*\r\n"
         ") else (\r\n"
         "  java -jar \"%~dp0gradle\\wrapper\\gradle-wrapper.jar\" %*\r\n"
-        ")\r\n"
+        ")\r\n",
+        encoding="utf-8",
     )
 
 
@@ -308,23 +386,27 @@ def run_build(project_dir: Path, minecraft_version: str, loader: str, clean: boo
 
     Returns True if build succeeded.
     """
+    project_dir = project_dir.resolve()
     java_exe = _check_java(minecraft_version)
     if not java_exe:
         return False
 
     env = _build_env(java_exe)
+    gradle_user_home = project_dir / ".gradle-user-home"
+    gradle_user_home.mkdir(parents=True, exist_ok=True)
+    env["GRADLE_USER_HOME"] = str(gradle_user_home)
     gradle_version = _required_gradle_version(loader, minecraft_version)
 
     if not _setup_gradle_wrapper(project_dir, env, gradle_version):
         print("[fabricpy] Build skipped - Gradle wrapper not set up.")
         print(f"[fabricpy] Source was generated at: {project_dir}")
         print("[fabricpy] Once you have Gradle installed, run:")
-        print(f"    cd {project_dir} && gradle wrapper && ./gradlew build")
+        print(f"    {_manual_gradle_wrapper_command(project_dir, gradle_version)}")
         return False
 
-    gradlew = str(project_dir / ("gradlew.bat" if sys.platform == "win32" else "gradlew"))
+    _ensure_wrapper_executable(project_dir)
     task = "clean build" if clean else "build"
-    cmd = [gradlew, "--no-daemon"] + task.split()
+    cmd = _gradle_command(project_dir, "--no-daemon", *task.split())
 
     print(f"[fabricpy] Running: {' '.join(cmd)}")
     print("[fabricpy] (This will download Minecraft and Fabric/Forge on first run - may take a few minutes)")

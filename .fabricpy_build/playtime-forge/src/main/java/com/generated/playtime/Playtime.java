@@ -45,6 +45,7 @@ public class Playtime {
         event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.HAND_SCANNER.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.HAND_SCANNER_RED_RIGHT.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.HAND_SCANNER_VTWO_BLUE.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.CRITTER_PLUSH_HOPPY.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.CRITTER_PLUSH_CATNAP.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.CRITTER_PLUSH_DOGDAY.get(), RenderType.cutout());

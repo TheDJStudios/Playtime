@@ -1,0 +1,16 @@
+JVM:         /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java
+JVM Args:    
+Run Args:    "--task", "MERGE_MAPPING", "--left", "config/joined.tsrg", "--right", "/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/downloadClientMappings/client_mappings.txt", "--right-names", "right,left", "--classes", "--output", "/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/mergeMappings/output.jar"
+Classpath:   /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/maven_downloader/net/minecraftforge/installertools/1.2.0/installertools-1.2.0-fatjar.jar
+Working Dir: /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/mergeMappings
+Main Class:  net.minecraftforge.installertools.ConsoleTool
+Task: MERGE_MAPPING
+Left:    config/joined.tsrg
+         null
+Right:   /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/downloadClientMappings/client_mappings.txt
+         right,left
+Classes: true
+Fields:  false
+Methods: false
+Params:  false
+Output:  /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/mergeMappings/output.jar

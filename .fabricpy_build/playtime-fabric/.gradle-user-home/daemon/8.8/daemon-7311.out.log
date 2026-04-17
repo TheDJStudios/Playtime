@@ -1,0 +1,169 @@
+2026-04-17T12:59:15.945-0500 [DEBUG] [org.gradle.launcher.daemon.bootstrap.DaemonMain] Assuming the daemon was started with following jvm opts: [--add-opens=java.base/java.util=ALL-UNNAMED, --add-opens=java.base/java.lang=ALL-UNNAMED, --add-opens=java.base/java.lang.invoke=ALL-UNNAMED, --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED, --add-opens=java.base/java.nio.charset=ALL-UNNAMED, --add-opens=java.base/java.net=ALL-UNNAMED, --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED, -Xmx1G, -Dfile.encoding=UTF-8, -Duser.country=US, -Duser.language=en, -Duser.variant]
+2026-04-17T12:59:16.059-0500 [INFO] [org.gradle.launcher.daemon.server.Daemon] start() called on daemon - DefaultDaemonContext[uid=3ca3c5c8-a6f7-474c-830e-aed28e5471bf,javaHome=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home,javaVersion=17,daemonRegistryDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/daemon,pid=7311,idleTimeout=120000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Xmx1G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+2026-04-17T12:59:16.103-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun9
+2026-04-17T12:59:16.104-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.104-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:e759:8596:4a6b:93f6%utun9
+2026-04-17T12:59:16.104-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun8
+2026-04-17T12:59:16.105-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.106-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:677b:ba82:2a47:12c1%utun8
+2026-04-17T12:59:16.106-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun7
+2026-04-17T12:59:16.106-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.106-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:4794:3e3b:db1c:d398%utun7
+2026-04-17T12:59:16.107-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun6
+2026-04-17T12:59:16.107-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.107-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:333:9412:8439:f4bd%utun6
+2026-04-17T12:59:16.107-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun5
+2026-04-17T12:59:16.108-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.108-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:2c8d:f399:6ab8:9199%utun5
+2026-04-17T12:59:16.108-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun4
+2026-04-17T12:59:16.108-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.109-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:f42:d3e6:c688:572%utun4
+2026-04-17T12:59:16.109-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun3
+2026-04-17T12:59:16.109-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.109-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:ce81:b1c:bd2c:69e%utun3
+2026-04-17T12:59:16.109-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun2
+2026-04-17T12:59:16.110-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.110-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:e157:dbed:709a:c16d%utun2
+2026-04-17T12:59:16.110-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun1
+2026-04-17T12:59:16.110-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.111-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:30db:3436:1757:4c68%utun1
+2026-04-17T12:59:16.111-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface utun0
+2026-04-17T12:59:16.111-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.111-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:528b:c6f4:861:c025%utun0
+2026-04-17T12:59:16.112-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface llw0
+2026-04-17T12:59:16.112-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.112-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:cc6c:a9ff:feda:7bf5%llw0
+2026-04-17T12:59:16.112-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface awdl0
+2026-04-17T12:59:16.112-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.113-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:cc6c:a9ff:feda:7bf5%awdl0
+2026-04-17T12:59:16.113-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface ap1
+2026-04-17T12:59:16.113-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.113-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:3c53:e3ff:fe27:e4b4%ap1
+2026-04-17T12:59:16.113-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface en0
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? false
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /fe80:0:0:0:c59:23ab:52e2:1d5c%en0
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding remote address /192.168.50.226
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding IP addresses for network interface lo0
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Is this a loopback interface? true
+2026-04-17T12:59:16.114-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Ignoring remote address on loopback interface /fe80:0:0:0:0:0:0:1%lo0
+2026-04-17T12:59:16.115-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding loopback address /0:0:0:0:0:0:0:1%lo0
+2026-04-17T12:59:16.115-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.InetAddresses] Adding loopback address /127.0.0.1
+2026-04-17T12:59:16.121-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.TcpIncomingConnector] Listening on [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]].
+2026-04-17T12:59:16.128-0500 [DEBUG] [org.gradle.launcher.daemon.server.Daemon] Daemon starting at: Fri Apr 17 12:59:16 CDT 2026, with address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T12:59:16.129-0500 [INFO] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Advertising the daemon address to the clients: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T12:59:16.129-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Advertised daemon context: DefaultDaemonContext[uid=3ca3c5c8-a6f7-474c-830e-aed28e5471bf,javaHome=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home,javaVersion=17,daemonRegistryDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/daemon,pid=7311,idleTimeout=120000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Xmx1G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+2026-04-17T12:59:16.129-0500 [DEBUG] [org.gradle.launcher.daemon.registry.PersistentDaemonRegistry] Storing daemon address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]], context: DefaultDaemonContext[uid=3ca3c5c8-a6f7-474c-830e-aed28e5471bf,javaHome=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home,javaVersion=17,daemonRegistryDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/daemon,pid=7311,idleTimeout=120000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Xmx1G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+2026-04-17T12:59:16.147-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Waiting to acquire exclusive lock on daemon addresses registry.
+2026-04-17T12:59:16.150-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Lock acquired on daemon addresses registry.
+2026-04-17T12:59:16.154-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on daemon addresses registry.
+2026-04-17T12:59:16.154-0500 [LIFECYCLE] [org.gradle.launcher.daemon.server.Daemon] Daemon server started.
+2026-04-17T12:59:16.155-0500 [DEBUG] [org.gradle.launcher.daemon.bootstrap.DaemonStartupCommunication] Completed writing the daemon greeting. Closing streams...
+2026-04-17T12:59:16.160-0500 [DEBUG] [org.gradle.launcher.daemon.server.Daemon] stopOnExpiration() called on daemon
+2026-04-17T12:59:16.160-0500 [DEBUG] [org.gradle.launcher.daemon.server.Daemon] awaitExpiration() called on daemon
+2026-04-17T12:59:16.160-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon is running. Sleeping until state changes.
+2026-04-17T12:59:16.193-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.TcpIncomingConnector] Accepted connection from /127.0.0.1:50123 to /127.0.0.1:50122.
+2026-04-17T12:59:16.224-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 20: received class org.gradle.launcher.daemon.protocol.Build
+2026-04-17T12:59:16.224-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultDaemonConnection] thread 20: Received non-IO message from client: Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}
+2026-04-17T12:59:16.225-0500 [INFO] [org.gradle.launcher.daemon.server.DefaultIncomingConnectionHandler] Received command: Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}.
+2026-04-17T12:59:16.225-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultIncomingConnectionHandler] Starting executing command: Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric} with connection: socket connection from /127.0.0.1:50122 to /127.0.0.1:50123.
+2026-04-17T12:59:16.226-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Command execution: started DaemonCommandExecution[command = Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}, connection = DefaultDaemonConnection: socket connection from /127.0.0.1:50122 to /127.0.0.1:50123] after 0.0 minutes of idle
+2026-04-17T12:59:16.227-0500 [INFO] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Marking the daemon as busy, address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T12:59:16.227-0500 [DEBUG] [org.gradle.launcher.daemon.registry.PersistentDaemonRegistry] Marking busy by address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T12:59:16.227-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Waiting to acquire exclusive lock on daemon addresses registry.
+2026-04-17T12:59:16.227-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Lock acquired on daemon addresses registry.
+2026-04-17T12:59:16.228-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on daemon addresses registry.
+2026-04-17T12:59:16.229-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] resetting idle timer
+2026-04-17T12:59:16.229-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon is running. Sleeping until state changes.
+2026-04-17T12:59:16.229-0500 [INFO] [org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy] Daemon is about to start building Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}. Dispatching build started information...
+2026-04-17T12:59:16.229-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 22: dispatching org.gradle.launcher.daemon.protocol.BuildStarted@66618d4b
+2026-04-17T12:59:16.232-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment] Configuring env variables: [PATH, GIT_PAGER, TERM, LANG, COMMAND_MODE, GH_PAGER, GRADLE_USER_HOME, COLORTERM, LOGNAME, CODEX_THREAD_ID, XPC_SERVICE_NAME, PWD, NO_COLOR, JAVA_MAIN_CLASS_7306, CODEX_CI, __CFBundleIdentifier, SHELL, CODEX_SANDBOX_NETWORK_DISABLED, CODEX_PATH, PAGER, CODEX_HOME, USER, TMPDIR, SSH_AUTH_SOCK, OSLogRateLimit, XPC_FLAGS, LC_ALL, __CF_USER_TEXT_ENCODING, LC_CTYPE, HOME, SHLVL]
+2026-04-17T12:59:16.236-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.LogToClient] About to start relaying all logs to the client via the connection.
+2026-04-17T12:59:16.237-0500 [INFO] [org.gradle.launcher.daemon.server.exec.LogToClient] The client will now receive all logging from the daemon (pid: 7311). The daemon log file: /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/daemon/8.8/daemon-7311.out.log
+2026-04-17T12:59:16.238-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.RequestStopIfSingleUsedDaemon] Requesting daemon stop after processing Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}
+2026-04-17T12:59:16.238-0500 [LIFECYCLE] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Daemon will be stopped at the end of the build 
+2026-04-17T12:59:16.238-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Stop as soon as idle requested. The daemon is busy: true
+2026-04-17T12:59:16.238-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon stop has been requested. Sleeping until state changes.
+2026-04-17T12:59:16.239-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.ExecuteBuild] The daemon has started executing the build.
+2026-04-17T12:59:16.239-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.ExecuteBuild] Executing build with daemon context: DefaultDaemonContext[uid=3ca3c5c8-a6f7-474c-830e-aed28e5471bf,javaHome=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home,javaVersion=17,daemonRegistryDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/daemon,pid=7311,idleTimeout=120000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=--add-opens=java.base/java.util=ALL-UNNAMED,--add-opens=java.base/java.lang=ALL-UNNAMED,--add-opens=java.base/java.lang.invoke=ALL-UNNAMED,--add-opens=java.prefs/java.util.prefs=ALL-UNNAMED,--add-opens=java.base/java.nio.charset=ALL-UNNAMED,--add-opens=java.base/java.net=ALL-UNNAMED,--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED,-Xmx1G,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+Fabric Loom: 1.6.12
+:remapping 53 mods from modImplementation (java-api)
+:remapping sources
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 53s
+6 actionable tasks: 6 executed
+2026-04-17T13:01:08.246-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.ExecuteBuild] The daemon has finished executing the build.
+2026-04-17T13:01:08.251-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon stop has been requested. Sleeping until state changes.
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Command execution: finished waiting for DaemonCommandExecution[command = Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}, connection = DefaultDaemonConnection: socket connection from /127.0.0.1:50122 to /127.0.0.1:50123]. Result org.gradle.launcher.daemon.server.DaemonStateCoordinator@7732347f with state StopRequested
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Command execution: completed DaemonCommandExecution[command = Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}, connection = DefaultDaemonConnection: socket connection from /127.0.0.1:50122 to /127.0.0.1:50123]
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] resetting idle timer
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] Marking daemon stopped due to command completed and stop requested. The daemon is running a build: false
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.ReturnResult] Daemon is dispatching the build result: Success[value=org.gradle.launcher.exec.BuildActionResult@60f80230]
+2026-04-17T13:01:08.257-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 19: dispatching Success[value=org.gradle.launcher.exec.BuildActionResult@60f80230]
+2026-04-17T13:01:08.258-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonStateCoordinator] daemon has stopped.
+2026-04-17T13:01:08.259-0500 [DEBUG] [org.gradle.launcher.daemon.server.Daemon] stop() called on daemon
+2026-04-17T13:01:08.259-0500 [INFO] [org.gradle.launcher.daemon.server.Daemon] Stop requested. Daemon is removing its presence from the registry...
+2026-04-17T13:01:08.259-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Removing our presence to clients, eg. removing this address from the registry: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T13:01:08.259-0500 [DEBUG] [org.gradle.launcher.daemon.registry.PersistentDaemonRegistry] Removing daemon address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T13:01:08.261-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Waiting to acquire exclusive lock on daemon addresses registry.
+2026-04-17T13:01:08.261-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Lock acquired on daemon addresses registry.
+2026-04-17T13:01:08.263-0500 [DEBUG] [org.gradle.launcher.daemon.server.exec.CleanUpVirtualFileSystemAfterBuild] Cleaning virtual file system after build finished
+2026-04-17T13:01:08.264-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on daemon addresses registry.
+2026-04-17T13:01:08.264-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultIncomingConnectionHandler] Finishing executing command: Build{id=a5818a96-b283-4836-bdde-c0cee22c2ca1, currentDir=/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric}
+2026-04-17T13:01:08.264-0500 [DEBUG] [org.gradle.launcher.daemon.server.DaemonRegistryUpdater] Address removed from registry.
+2026-04-17T13:01:08.268-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 20: received class org.gradle.launcher.daemon.protocol.CloseInput
+2026-04-17T13:01:08.268-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultDaemonConnection] thread 20: Received IO message from client: org.gradle.launcher.daemon.protocol.CloseInput@7da67add
+2026-04-17T13:01:08.268-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 20: received class org.gradle.launcher.daemon.protocol.Finished
+2026-04-17T13:01:08.268-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultDaemonConnection] thread 20: Received non-IO message from client: org.gradle.launcher.daemon.protocol.Finished@133a4a33
+2026-04-17T13:01:08.270-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultIncomingConnectionHandler] Received finished message: org.gradle.launcher.daemon.protocol.Finished@133a4a33
+2026-04-17T13:01:08.270-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 19: stopping connection
+2026-04-17T13:01:08.279-0500 [DEBUG] [org.gradle.internal.remote.internal.inet.SocketConnection] Discarding EOFException: java.io.EOFException
+2026-04-17T13:01:08.280-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 20: received null
+2026-04-17T13:01:08.280-0500 [DEBUG] [org.gradle.launcher.daemon.server.DefaultDaemonConnection] thread 20: Received end-of-input from client.
+2026-04-17T13:01:08.281-0500 [DEBUG] [org.gradle.launcher.daemon.server.SynchronizedDispatchConnection] thread 19: stopping connection
+2026-04-17T13:01:08.284-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for jars (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/jars-9)
+2026-04-17T13:01:08.284-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on jars (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/jars-9).
+2026-04-17T13:01:08.286-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for file content cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileContent)
+2026-04-17T13:01:08.287-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache annotation-processors.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileContent/annotation-processors.bin)
+2026-04-17T13:01:08.287-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on file content cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileContent).
+2026-04-17T13:01:08.288-0500 [DEBUG] [org.gradle.internal.watch.vfs.impl.WatchingVirtualFileSystem] Closing VFS, dropping state
+2026-04-17T13:01:08.290-0500 [DEBUG] [org.gradle.internal.watch.registry.impl.DefaultFileWatcherRegistry] Finished listening to file system change events
+2026-04-17T13:01:08.290-0500 [DEBUG] [org.gradle.cache.internal.DefaultCacheCoordinator] Cache Generated Gradle JARs cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/generated-gradle-jars) was closed 0 times.
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for artifact cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2)
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache resource-at-url.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2/metadata-2.106/resource-at-url.bin)
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache module-artifact.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2/metadata-2.106/module-artifact.bin)
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache module-metadata.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2/metadata-2.106/module-metadata.bin)
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache module-artifacts.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2/metadata-2.106/module-artifacts.bin)
+2026-04-17T13:01:08.291-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on artifact cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/modules-2).
+2026-04-17T13:01:08.293-0500 [DEBUG] [org.gradle.cache.internal.DefaultCacheCoordinator] Cache groovy-dsl (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/groovy-dsl) was closed 0 times.
+2026-04-17T13:01:08.293-0500 [DEBUG] [org.gradle.cache.internal.DefaultCacheCoordinator] Cache Artifact transforms cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/transforms) was closed 0 times.
+2026-04-17T13:01:08.294-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for journal cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/journal-1)
+2026-04-17T13:01:08.294-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache file-access.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/journal-1/file-access.bin)
+2026-04-17T13:01:08.294-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on journal cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/journal-1).
+2026-04-17T13:01:08.295-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for file hash cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileHashes)
+2026-04-17T13:01:08.296-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache fileHashes.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileHashes/fileHashes.bin)
+2026-04-17T13:01:08.298-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache resourceHashesCache.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileHashes/resourceHashesCache.bin)
+2026-04-17T13:01:08.298-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on file hash cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/fileHashes).
+2026-04-17T13:01:08.299-0500 [DEBUG] [org.gradle.cache.internal.LockOnDemandCrossProcessCacheAccess] Releasing file lock for Java compile cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/javaCompile)
+2026-04-17T13:01:08.299-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache jarAnalysis.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/javaCompile/jarAnalysis.bin)
+2026-04-17T13:01:08.299-0500 [DEBUG] [org.gradle.cache.internal.btree.BTreePersistentIndexedCache] Closing cache classAnalysis.bin (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/javaCompile/classAnalysis.bin)
+2026-04-17T13:01:08.299-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on Java compile cache (/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches/8.8/javaCompile).
+2026-04-17T13:01:08.300-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Deleting unused version-specific caches in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches' started
+2026-04-17T13:01:08.301-0500 [DEBUG] [org.gradle.cache.internal.VersionSpecificCacheCleanupAction] Processed version-specific caches at /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches for cleanup in 0.0 secs
+2026-04-17T13:01:08.302-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Deleting unused version-specific caches in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches'
+2026-04-17T13:01:08.302-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Deleting unused version-specific caches in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/caches' completed
+2026-04-17T13:01:08.303-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Deleting unused Gradle distributions in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/wrapper/dists' started
+2026-04-17T13:01:08.306-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Completing Build operation 'Deleting unused Gradle distributions in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/wrapper/dists'
+2026-04-17T13:01:08.306-0500 [DEBUG] [org.gradle.internal.operations.DefaultBuildOperationRunner] Build operation 'Deleting unused Gradle distributions in /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-fabric/.gradle-user-home/wrapper/dists' completed
+2026-04-17T13:01:08.307-0500 [DEBUG] [org.gradle.launcher.daemon.registry.PersistentDaemonRegistry] Removing daemon address: [7c655159-bf46-4c51-b624-9ffee4016953 port:50122, addresses:[localhost/127.0.0.1]]
+2026-04-17T13:01:08.307-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Waiting to acquire exclusive lock on daemon addresses registry.
+Daemon vm is shutting down... The daemon has exited normally or was terminated in response to a user interrupt.
+2026-04-17T13:01:08.307-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Lock acquired on daemon addresses registry.
+2026-04-17T13:01:08.308-0500 [DEBUG] [org.gradle.cache.internal.DefaultFileLockManager] Releasing lock on daemon addresses registry.

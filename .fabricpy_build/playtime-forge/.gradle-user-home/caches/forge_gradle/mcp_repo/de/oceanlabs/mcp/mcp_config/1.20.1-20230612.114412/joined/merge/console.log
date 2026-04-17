@@ -1,0 +1,6 @@
+JVM:         /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java
+JVM Args:    
+Run Args:    "--client", "/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/stripClient/output.jar", "--server", "/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/stripServer/output.jar", "--ann", "1.20.1", "--output", "/Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/merge/output.jar", "--inject", "false"
+Classpath:   /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/maven_downloader/net/minecraftforge/mergetool/1.1.7/mergetool-1.1.7-fatjar.jar
+Working Dir: /Users/alhazbean/Documents/GitHub/Playtime/.fabricpy_build/playtime-forge/.gradle-user-home/caches/forge_gradle/mcp_repo/de/oceanlabs/mcp/mcp_config/1.20.1-20230612.114412/joined/merge
+Main Class:  net.minecraftforge.mergetool.ConsoleMerger

@@ -1,0 +1,76 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "net.minecraftforge",
+    "module": "mclanguage",
+    "version": "1.20.1-47.4.18",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.8"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "mclanguage-1.20.1-47.4.18.jar",
+          "url": "mclanguage-1.20.1-47.4.18.jar",
+          "size": 4995,
+          "sha512": "1c749b532138f8398c79566188a4408ecea84e7f778100c4e1cb689f319242f89d4a9190ee69726dac57d2438daaedc4d3df9523bb35bcf7c474b0d44736f4c3",
+          "sha256": "1d8610f8f21bf55129c20f968363ea3ac32758d2fa2fd7f97a2ef6be545fa892",
+          "sha1": "f6a2d32cb3b5b54788432adafe8b11c99abaf7bd",
+          "md5": "c9069482062cbe2f59658e9d18f5442d"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "net.minecraftforge",
+          "module": "fmlloader",
+          "version": {
+            "requires": "1.20.1-47.4.18"
+          }
+        },
+        {
+          "group": "net.minecraftforge",
+          "module": "fmlcore",
+          "version": {
+            "requires": "1.20.1-47.4.18"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "mclanguage-1.20.1-47.4.18.jar",
+          "url": "mclanguage-1.20.1-47.4.18.jar",
+          "size": 4995,
+          "sha512": "1c749b532138f8398c79566188a4408ecea84e7f778100c4e1cb689f319242f89d4a9190ee69726dac57d2438daaedc4d3df9523bb35bcf7c474b0d44736f4c3",
+          "sha256": "1d8610f8f21bf55129c20f968363ea3ac32758d2fa2fd7f97a2ef6be545fa892",
+          "sha1": "f6a2d32cb3b5b54788432adafe8b11c99abaf7bd",
+          "md5": "c9069482062cbe2f59658e9d18f5442d"
+        }
+      ]
+    }
+  ]
+}

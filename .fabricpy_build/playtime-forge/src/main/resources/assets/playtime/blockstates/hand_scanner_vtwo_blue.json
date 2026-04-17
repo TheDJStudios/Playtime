@@ -1,0 +1,76 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue",
+        "y": 0
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue__emissive",
+        "y": 0
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue__emissive",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue__emissive",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "playtime:block/hand_scanner_vtwo_blue__emissive",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
+    }
+  ]
+}
